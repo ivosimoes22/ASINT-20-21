@@ -54,8 +54,8 @@ def addNewUser(user_id, name):
     try:
         db_session.add(newUser)
         db_session.commit()
-        print(user_id)
-        db_session.close()
+        #db_session.close()
         return newUser.id
     except:
+        db_session.rollback()
         return None

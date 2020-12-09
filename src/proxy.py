@@ -35,21 +35,24 @@ loggedUsers = {}
 #User Authentication
 @app.route('/')
 def home_page():
-    # verification if the user is logged in
 
+    # verification if the user is logged in
     if fenix_blueprint.session.authorized != False:
         #if the user is authenticated then a request to FENIX is made
         resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
         #res contains the responde made to /api/fenix/vi/person (information about current user)
         user_data = resp.json()
         
-        #Keep track of users logged in
-        loggedUsers[user_data["username"]]=user_data["name"]
+        #Keep track of users logged in    ##Not sure yet if needed
+        loggedUsers[user_data["username"]] = user_data["name"]
 
         if addNewUser(user_data["username"], user_data["name"]) is not None:
             print("New User added to the Database")
         else:
             print("User Already in")
+            print(listUsersDict())
+
+        #print(loggedUsers)
 
     return render_template("appPage.html", loggedIn = fenix_blueprint.session.authorized)
 
