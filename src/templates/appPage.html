@@ -1,0 +1,18 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - Flask</title>
+
+{% if loggedIn %}
+User logged in
+<br>
+<a href="{{ url_for("private_page") }}"> Private part of the site (needs auth)</a>
+<br>
+<a href="{{ url_for("logout") }}"> Logout</a>
+
+
+{% else %}
+<a href="{{ url_for("fenix-example.login") }}">Login with OAuth Example</a>
+
+{% endif %}
+<body>
+
+  </body>
