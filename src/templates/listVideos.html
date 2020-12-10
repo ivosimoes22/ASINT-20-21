@@ -71,7 +71,10 @@
                   newVideoUrl = $("#newVideoURL").val()
                   newVideoTitle = $("#newVideoTitle").val()
                   newVideoDesc = $("#newVideoDescription").val()
-                  addNewVideo(newVideoUrl, newVideoTitle, newVideoDesc)
+                  if (newVideoUrl && newVideoTitle && newVideoDesc) {
+                    //checkUrl(newVideoUrl)
+                    addNewVideo(newVideoUrl, newVideoTitle, newVideoDesc)
+                  }
               }
           )
         });
@@ -103,13 +106,13 @@
 
   <h3>Add a new Video</h3>
     <div class="ui input">
-      <input type="text" placeholder="Video URL" id="newVideoURL">
+      <input type="text" placeholder="Video URL" id="newVideoURL" required>
     </div>
     <div class="ui input">
-      <input type="text" placeholder="Title" id="newVideoTitle">
+      <input type="text" placeholder="Title" id="newVideoTitle" required>
     </div>
     <div class="ui input">
-        <input type="text" placeholder="Video Description" id="newVideoDescription">
+        <input type="text" placeholder="Video Description" id="newVideoDescription" required>
       </div>
     <button class="ui button" id="buttonAddVideo">
       Add new Video

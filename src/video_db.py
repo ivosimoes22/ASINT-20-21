@@ -1,3 +1,4 @@
+from enum import unique
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -28,7 +29,7 @@ Base = declarative_base()
 class Video(Base):
     __tablename__ = 'Video'
     id = Column(Integer, primary_key=True)
-    url = Column(String)
+    url = Column(String, unique=True)
     title = Column(String)
     description = Column(String)
     views = Column(Integer, default = 0)
