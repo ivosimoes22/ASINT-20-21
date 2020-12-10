@@ -13,15 +13,12 @@ from flask_dance.consumer import OAuth2ConsumerBlueprint
 from flask import session, jsonify
 from flask import request
 
-import os
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
 
 app = Flask(__name__)
 
 
 #SLQ access layer initialization
-DATABASE_FILE = "users.sqlite"
+DATABASE_FILE = "db_users.sqlite"
 db_exists = False
 if path.exists(DATABASE_FILE):
     db_exists = True
@@ -37,7 +34,7 @@ class User(Base):
     name = Column(String)
 
     def __repr__(self):
-        return "<User (id=%s, Name=%s>" % (self.id, self.name)
+        return "<User (id=%s, name=%s>" % (self.id, self.name)
 
     def to_dict(self):
         return {"user_id": self.id, "name": self.name}
@@ -74,9 +71,7 @@ def addNewUserDB(user_id, name):
 
 @app.route('/addUser', methods=['POST'] )
 def addNewUser():
-
     if request.method == "POST":
-        userData = {}
         try:
             if addNewUserDB(request.form["id"], request.form["name"]) is not None:
                 print("New User added to the Database")

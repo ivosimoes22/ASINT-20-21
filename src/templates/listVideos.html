@@ -8,18 +8,59 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <script>
-        $(document).ready(function(){
 
-          $("#buttonlogout").click(
-            function(){
-              window.location.href = '/logout'
-            }
-          )
+        function addNewVideo(url, title, description){
+            let requestData={'url': url, 'title': title, "description": description }
+            $.ajax({
+                url: '/api/videos/',
+                type: "POST",
+                dataType: "json",
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(data){
+                    console.log("resppnse for video creation"+data)
+                    console.log(data)
+                //updateVideostable()
+                }
+            });
+        }
+
+        function updateVideoTable() {
+            $.ajax({
+                url: '/API/videos/',
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                     console.log(data);
+                     $('#videosTable > tbody:last-child').empty()
+                     data["videos"].forEach(v => {
+                         console.log(v["url"]+" "+v["description"])
+                         $('#videosTable > tbody:last-child').append('<tr> <td>'+ v["url"]+'</td><td>' + v["title"] + '</td><td>' + v["description"] + '</td></tr>');
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function(){
+            updateVideoTable()
+            $("#buttonlogout").click(
+                function(){
+                    window.location.href = '/logout'
+                }
+            )
+            $("#buttonAddVideo").click(
+                function(){                  
+                    newVideoUrl = $("#newVideoURL").val()
+                    newVideoTitle = $("#newVideoTitle").val()
+                    newVideoDesc = $("#newVideoDescription").val()
+                    addNewVideo(newVideoUrl, newVideoTitle, newVideoDesc)
+                }
+            )
         });
 
 
     </script>
-
+<!-- '<td><button class="ui button" id="buttonCheck">Video Page</button></td>'  -->
 
 </head>
 <body>
@@ -27,7 +68,7 @@
   <table class="ui celled table selectable" id="videosTable" >
     <thead>
       <tr>
-        <th>ID</th>  <th>Description</th>   <th>Views</th>
+        <th>URL</th>  <th>Title</th>   <th>Description</th> <th>Questions</th>
       </tr>
     </thead>
     <tbody>
@@ -36,6 +77,20 @@
   <button class="ui button" id="buttonUpdateVideotable">
     Update List
   </button>
+
+  <h3>Add a new Video</h3>
+    <div class="ui input">
+      <input type="text" placeholder="Video URL" id="newVideoURL">
+    </div>
+    <div class="ui input">
+      <input type="text" placeholder="Title" id="newVideoTitle">
+    </div>
+    <div class="ui input">
+        <input type="text" placeholder="Video Description" id="newVideoDescription">
+      </div>
+    <button class="ui button" id="buttonAddVideo">
+      Add new Video
+    </button>
 
   <div style="position: absolute; left:90%; top:90%;">
     <button class="ui button" id="buttonlogout">

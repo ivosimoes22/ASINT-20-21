@@ -16,7 +16,8 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 components = {
-    'user_manager': "http://127.0.0.1:4700/"
+    'user_manager': "http://127.0.0.1:4700/",
+    'video_db': "http://127.0.0.1:4800/"
 }
 
 
@@ -49,7 +50,7 @@ def home_page():
         #loggedUsers[user_data["username"]] = user_data["name"]
 
         userInfo = {}
-        userInfo["id"] = user_data["name"]
+        userInfo["id"] = user_data["username"]
         userInfo["name"] = user_data["name"]
         url = components["user_manager"] + 'addUser'
         msg = requests.post(url=url, data=userInfo)
@@ -95,6 +96,37 @@ def private_page():
         user_data = resp.json()
 
         return render_template("privPage.html", username=user_data['username'], name=user_data['name'])
+
+#API
+@app.route('/api/videos/', methods=['POST'])
+def createNewVideo():
+    if fenix_blueprint.session.authorized == True:
+        if request.method == "POST":
+            videoInfo = {}
+            try:
+                videoInfo = request.get_json()
+                #Get the ID of the user creating the video
+                resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+                videoInfo["userId"] = resp.json()["username"]
+                url = components["video_db"] + 'addVideo'
+                msg = requests.post(url=url, data=videoInfo)
+
+                if msg.status_code != 200:
+                    print('Error in posting on VideoDB!')
+            except:
+                print("Error receiving video info!")
+            return redirect(url_for("home_page"))
+    else:
+        redirect(url_for("fenix-example.login"))
+
+
+@app.route("/API/videos/", methods=['GET'])
+def returnsVideosJSON():
+    if request.method == "GET":
+        videosDict = requests.get(components["video_db"]+'getVideos')
+        print(videosDict.json())
+
+        return {"videos": videosDict.json()}
 
 
 
