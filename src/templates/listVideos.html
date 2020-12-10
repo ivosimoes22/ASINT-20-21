@@ -29,6 +29,10 @@
           });
         }
 
+        function goToVideoPage(id){
+          console.log(id)
+        }
+
         function updateVideoTable() {
           $.ajax({
               url: '/API/videos/',
@@ -39,7 +43,7 @@
                     $('#videosTable > tbody:last-child').empty()
                     data["videos"].forEach(v => {
                         console.log(v["url"]+" "+v["description"])
-                        $('#videosTable > tbody:last-child').append('<tr> <td>' + v["video_id"] + '</td><td>' + v["url"]+'</td><td>' + v["title"] + '</td><td>' + v["description"] + '</td><td id="nquestions'+v["video_id"]+'">xxx</td>' + '<td><button class="ui button" id="buttonCheck">Go</button></td>'+'</tr>');
+                        $('#videosTable > tbody:last-child').append('<tr> <td>' + v["video_id"] + '</td><td>' + v["url"]+'</td><td>' + v["title"] + '</td><td>' + v["description"] + '</td><td id="nquestions'+v["video_id"]+'">xxx</td>' + '<td><button class="ui button" id="buttonGo" onClick=javascript:goToVideoPage('+v["video_id"]+');' +'>Go</button></td>'+'</tr>');
                         getNumberOfQuestions(v["video_id"])
                   });
               }
@@ -63,9 +67,7 @@
           )
         });
 
-
     </script>
-<!-- '<td><button class="ui button" id="buttonCheck">Video Page</button></td>'  -->
 
 </head>
 
