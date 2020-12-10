@@ -8,9 +8,20 @@ import datetime
 from sqlalchemy.orm import sessionmaker
 from os import path
 
+from flask import Flask
+from flask_dance.consumer import OAuth2ConsumerBlueprint
+from flask import session, jsonify
+from flask import request
+
+import os
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
+app = Flask(__name__)
+
 
 #SLQ access layer initialization
-DATABASE_FILE = "database.sqlite"
+DATABASE_FILE = "users.sqlite"
 db_exists = False
 if path.exists(DATABASE_FILE):
     db_exists = True
@@ -37,6 +48,7 @@ db_Session = sessionmaker(bind=engine)
 db_session = scoped_session(db_Session)
 #session = Session()
 
+#Functions related with the db
 def listUsers():
     return db_session.query(User).all()
 
@@ -49,7 +61,7 @@ def listUsersDict():
     return users
 
 
-def addNewUser(user_id, name):
+def addNewUserDB(user_id, name):
     newUser = User(id=user_id,name=name)
     try:
         db_session.add(newUser)
@@ -59,3 +71,24 @@ def addNewUser(user_id, name):
     except:
         db_session.rollback()
         return None
+
+@app.route('/addUser', methods=['POST'] )
+def addNewUser():
+
+    if request.method == "POST":
+        userData = {}
+        try:
+            if addNewUserDB(request.form["id"], request.form["name"]) is not None:
+                print("New User added to the Database")
+            else:
+                print("User Already in")
+                print(listUsersDict())
+        except:
+            print("Error adding to user DB")
+    return jsonify()       
+
+
+    
+
+if __name__ == '__main__':
+    app.run(debug=True, port=4700)
