@@ -9,53 +9,58 @@
 
     <script>
 
+        function getNumberOfQuestions(id) {
+          $("#nquestions"+id).html(0)
+        }
+
         function addNewVideo(url, title, description){
-            let requestData={'url': url, 'title': title, "description": description }
-            $.ajax({
-                url: '/api/videos/',
-                type: "POST",
-                dataType: "json",
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: function(data){
-                    console.log("resppnse for video creation"+data)
-                    console.log(data)
-                //updateVideostable()
-                }
-            });
+          let requestData={'url': url, 'title': title, "description": description }
+          $.ajax({
+              url: '/api/videos/',
+              type: "POST",
+              dataType: "json",
+              contentType: 'application/json',
+              data: JSON.stringify(requestData),
+              success: function(data){
+                  console.log("resppnse for video creation"+data)
+                  console.log(data)
+                  updateVideoTable()
+              }
+          });
         }
 
         function updateVideoTable() {
-            $.ajax({
-                url: '/API/videos/',
-                type: "GET",
-                dataType: "json",
-                success: function (data) {
-                     console.log(data);
-                     $('#videosTable > tbody:last-child').empty()
-                     data["videos"].forEach(v => {
-                         console.log(v["url"]+" "+v["description"])
-                         $('#videosTable > tbody:last-child').append('<tr> <td>'+ v["url"]+'</td><td>' + v["title"] + '</td><td>' + v["description"] + '</td></tr>');
-                    });
-                }
-            });
+          $.ajax({
+              url: '/API/videos/',
+              type: "GET",
+              dataType: "json",
+              success: function (data) {
+                    console.log(data);
+                    $('#videosTable > tbody:last-child').empty()
+                    data["videos"].forEach(v => {
+                        console.log(v["url"]+" "+v["description"])
+                        $('#videosTable > tbody:last-child').append('<tr> <td>' + v["video_id"] + '</td><td>' + v["url"]+'</td><td>' + v["title"] + '</td><td>' + v["description"] + '</td><td id="nquestions'+v["video_id"]+'">xxx</td>' + '<td><button class="ui button" id="buttonCheck">Go</button></td>'+'</tr>');
+                        getNumberOfQuestions(v["video_id"])
+                  });
+              }
+          });
         }
 
         $(document).ready(function(){
-            updateVideoTable()
-            $("#buttonlogout").click(
-                function(){
-                    window.location.href = '/logout'
-                }
-            )
-            $("#buttonAddVideo").click(
-                function(){                  
-                    newVideoUrl = $("#newVideoURL").val()
-                    newVideoTitle = $("#newVideoTitle").val()
-                    newVideoDesc = $("#newVideoDescription").val()
-                    addNewVideo(newVideoUrl, newVideoTitle, newVideoDesc)
-                }
-            )
+          updateVideoTable()
+          $("#buttonlogout").click(
+              function(){
+                  window.location.href = '/logout'
+              }
+          )
+          $("#buttonAddVideo").click(
+              function(){                  
+                  newVideoUrl = $("#newVideoURL").val()
+                  newVideoTitle = $("#newVideoTitle").val()
+                  newVideoDesc = $("#newVideoDescription").val()
+                  addNewVideo(newVideoUrl, newVideoTitle, newVideoDesc)
+              }
+          )
         });
 
 
@@ -63,12 +68,19 @@
 <!-- '<td><button class="ui button" id="buttonCheck">Video Page</button></td>'  -->
 
 </head>
+
+<div style="position: absolute; left:93%; top:1%;">
+  <button class="ui button" id="buttonlogout">
+      Logout
+    </button>
+</div>
+
 <body>
   <h3>List of videos</h3>
   <table class="ui celled table selectable" id="videosTable" >
     <thead>
       <tr>
-        <th>URL</th>  <th>Title</th>   <th>Description</th> <th>Questions</th>
+        <th>ID</th>  <th>URL</th>  <th>Title</th>   <th>Description</th> <th>Questions</th> <th>Video Page</th>
       </tr>
     </thead>
     <tbody>
@@ -92,8 +104,8 @@
       Add new Video
     </button>
 
-  <div style="position: absolute; left:90%; top:90%;">
+  <!-- <div style="position: absolute; left:90%; top:10%;">
     <button class="ui button" id="buttonlogout">
         Logout
       </button>
-</div>
+</div> -->

@@ -31,17 +31,18 @@ Base = declarative_base()
 
 class Video(Base):
     __tablename__ = 'Video'
-    url = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    url = Column(String)
     title = Column(String)
     description = Column(String)
     views = Column(Integer, default = 0)
     userId = Column(String)
 
     def __repr__(self):
-        return "<Video (URL=%s, Title=%s, Description=%s, Views=%d, User=%s>" % (self.url, self.title, self.description, self.views, self.userId)
+        return "<Video (Id=%d, URL=%s, Title=%s, Description=%s, Views=%d, User=%s>" % (self.id, self.url, self.title, self.description, self.views, self.userId)
 
     def to_dict(self):
-        return {'url': self.url, 'title': self.title, 'description': self.description, 'views': self.views, 'userId': self.userId}
+        return {'video_id': self.id, 'url': self.url, 'title': self.title, 'description': self.description, 'views': self.views, 'userId': self.userId}
 
 
 Base.metadata.create_all(engine) #Create tables for the data models

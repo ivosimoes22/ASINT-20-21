@@ -115,7 +115,7 @@ def createNewVideo():
                     print('Error in posting on VideoDB!')
             except:
                 print("Error receiving video info!")
-            return redirect(url_for("home_page"))
+            return jsonify()
     else:
         redirect(url_for("fenix-example.login"))
 
