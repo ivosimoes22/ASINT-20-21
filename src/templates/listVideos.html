@@ -9,8 +9,17 @@
 
     <script>
 
-        function getNumberOfQuestions(id) {
-          $("#nquestions"+id).html(0)
+        function getNumberOfQuestions(videoId) {
+          $.ajax({
+            url: '/api/videos/'+videoId+'/question',
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              console.log(data)
+              $("#nquestions"+videoId).html(data['nr_questions'])
+              console.log("update the number of views on the table for"+videoId)
+            },
+          })
         }
 
         function addNewVideo(url, title, description){
@@ -35,7 +44,7 @@
 
         function updateVideoTable() {
           $.ajax({
-              url: '/API/videos/',
+              url: '/api/videos/',
               type: "GET",
               dataType: "json",
               success: function (data) {

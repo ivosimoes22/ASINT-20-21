@@ -17,7 +17,8 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 components = {
     'user_manager': "http://127.0.0.1:4700/",
-    'video_db': "http://127.0.0.1:4800/"
+    'video_db': "http://127.0.0.1:4800/",
+    'qa': "http://127.0.0.1:4900/"
 }
 
 
@@ -120,16 +121,29 @@ def createNewVideo():
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/API/videos/", methods=['GET'])
+@app.route("/api/videos/", methods=['GET'])
 def returnsVideosJSON():
-    if request.method == "GET":
-        videosDict = requests.get(components["video_db"]+'getVideos')
-        print(videosDict.json())
+    if fenix_blueprint.session.authorized == True:
+        if request.method == "GET":
+            videosDict = requests.get(components["video_db"]+'getVideos')
+            return {"videos": videosDict.json()}
+    else:
+        redirect(url_for("fenix-example.login"))
 
-        return {"videos": videosDict.json()}
 
-
-
+@app.route("/api/videos/<int:id>/question", methods=["GET"])
+def returnNumeberOfQuestions(id):
+    if fenix_blueprint.session.authorized == True:
+        nr_question = {}
+        if request.method == "GET":
+            url = components["qa"]+'/video/'+str(id)+'/questions/number'
+            try:
+                nr_question = requests.get(url=url)
+            except:
+                print("Error getting")
+            return jsonify(nr_question.json())
+    else:
+        redirect(url_for("fenix-example.login"))
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

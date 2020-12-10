@@ -5,16 +5,12 @@ from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, scoped_session
 
-import datetime
 from sqlalchemy.orm import sessionmaker
 from os import abort, path
 
 from flask import Flask
-from flask_dance.consumer import OAuth2ConsumerBlueprint
-from flask import session, jsonify
+from flask import jsonify
 from flask import request
-
-from user_manager import addNewUserDB
 
 app = Flask(__name__)
 
@@ -39,7 +35,7 @@ class Video(Base):
     userId = Column(String)
 
     def __repr__(self):
-        return "<Video (Id=%d, URL=%s, Title=%s, Description=%s, Views=%d, User=%s>" % (self.id, self.url, self.title, self.description, self.views, self.userId)
+        return "<Video (Id=%d, URL=%s, Title=%s, Description=%s, Views=%d, User=%s>)" % (self.id, self.url, self.title, self.description, self.views, self.userId)
 
     def to_dict(self):
         return {'video_id': self.id, 'url': self.url, 'title': self.title, 'description': self.description, 'views': self.views, 'userId': self.userId}

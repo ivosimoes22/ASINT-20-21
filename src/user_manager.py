@@ -9,8 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from os import path
 
 from flask import Flask
-from flask_dance.consumer import OAuth2ConsumerBlueprint
-from flask import session, jsonify
+from flask import jsonify
 from flask import request
 
 
@@ -34,7 +33,7 @@ class User(Base):
     name = Column(String)
 
     def __repr__(self):
-        return "<User (id=%s, name=%s>" % (self.id, self.name)
+        return "<User (id=%s, name=%s>)" % (self.id, self.name)
 
     def to_dict(self):
         return {"user_id": self.id, "name": self.name}
