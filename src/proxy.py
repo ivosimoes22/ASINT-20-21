@@ -43,27 +43,30 @@ loggedUsers = {}
 def home_page():
 
     # verification if the user is logged in
-    if fenix_blueprint.session.authorized != False:
-        resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
-        user_data = resp.json()
+    try:
+        if fenix_blueprint.session.authorized != False:
+            resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+            user_data = resp.json()
+            print(user_data)
+            #Keep track of users logged in    ##Not sure yet if needed
+            #loggedUsers[user_data["username"]] = user_data["name"]
+
+            userInfo = {}
+            userInfo["id"] = user_data["username"]
+            userInfo["name"] = user_data["name"]
+            url = components["user_manager"] + 'addUser'
+            msg = requests.post(url=url, data=userInfo)
+
+            if msg.status_code != 200:
+                print('Error in posting on User Manager!')
         
-        #Keep track of users logged in    ##Not sure yet if needed
-        #loggedUsers[user_data["username"]] = user_data["name"]
+            return render_template("listVideos.html")
+            #print(loggedUsers)
 
-        userInfo = {}
-        userInfo["id"] = user_data["username"]
-        userInfo["name"] = user_data["name"]
-        url = components["user_manager"] + 'addUser'
-        msg = requests.post(url=url, data=userInfo)
-
-        if msg.status_code != 200:
-            print('Error in posting on User Manager!')
-     
-        return render_template("listVideos.html")
-        #print(loggedUsers)
-
-    #return app.send_static_file('welcomepage.html')
-    return render_template("welcomePage.html")
+        #return app.send_static_file('welcomepage.html')
+        return render_template("welcomePage.html")
+    except:
+        return render_template("welcomePage.html")
 
 
 #User Authentication
@@ -74,11 +77,7 @@ def authFunction():
 @app.route('/logout')
 def logout():
     # this clears all server information about the access token of this connection
-    res = str(session.items())
-    print(res)
     session.clear()
-    res = str(session.items())
-    print(res)
     return redirect(url_for("home_page"))
   
 @app.route('/video_page/<int:id>')
