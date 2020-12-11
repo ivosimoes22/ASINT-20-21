@@ -76,18 +76,17 @@ def returnSingleVideoDB(id):
 
 @app.route('/addVideo', methods=['POST'])
 def addNewVideo():
-    if request.method == "POST":
-        try:
-            print(request.form["url"])
-            if addNewVideoDB(request.form["url"], request.form["title"], request.form["userId"]) is not None:
-                print("New Video added with success")
-            else:
-                print("Couldnt add video")
-        except:
-            print("Error addding to VideoDB")
-        
-        print(listVideosDict())
-        return jsonify()
+    try:
+        print(request.form["url"])
+        if addNewVideoDB(request.form["url"], request.form["title"], request.form["userId"]) is not None:
+            print("New Video added with success")
+        else:
+            print("Couldnt add video")
+    except:
+        print("Error addding to VideoDB")
+    
+    print(listVideosDict())
+    return jsonify()
 
 
 @app.route('/getVideos', methods=['GET'])

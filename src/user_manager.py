@@ -70,15 +70,14 @@ def addNewUserDB(user_id, name):
 
 @app.route('/addUser', methods=['POST'] )
 def addNewUser():
-    if request.method == "POST":
-        try:
-            if addNewUserDB(request.form["id"], request.form["name"]) is not None:
-                print("New User added to the Database")
-            else:
-                print("User Already in")
-                print(listUsersDict())
-        except:
-            print("Error adding to user DB")
+    try:
+        if addNewUserDB(request.form["id"], request.form["name"]) is not None:
+            print("New User added to the Database")
+        else:
+            print("User Already in")
+            print(listUsersDict())
+    except:
+        print("Error adding to user DB")
     return jsonify()       
 
 

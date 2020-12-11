@@ -47,10 +47,6 @@ def home_page():
         if fenix_blueprint.session.authorized != False:
             resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
             user_data = resp.json()
-            print(user_data)
-            #Keep track of users logged in    ##Not sure yet if needed
-            #loggedUsers[user_data["username"]] = user_data["name"]
-
             userInfo = {}
             userInfo["id"] = user_data["username"]
             userInfo["name"] = user_data["name"]
@@ -84,51 +80,50 @@ def logout():
 def getVideoPage(id):
     return render_template("videoPage.html")
 
-@app.route('/private')
-def private_page():
-    #this page can only be accessed by a authenticated user
+# @app.route('/private')
+# def private_page():
+#     #this page can only be accessed by a authenticated user
 
-    # verification of the user is  logged in
-    if fenix_blueprint.session.authorized == False:
-        #if not logged in browser is redirected to login page (in this case FENIX handled the login)
-        return redirect(url_for("fenix-example.login"))
-    else:
-        #if the user is authenticated then a request to FENIX is made
-        resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
-        #res contains the responde made to /api/fenix/vi/person (information about current user)
-        user_data = resp.json()
+#     # verification of the user is  logged in
+#     if fenix_blueprint.session.authorized == False:
+#         #if not logged in browser is redirected to login page (in this case FENIX handled the login)
+#         return redirect(url_for("fenix-example.login"))
+#     else:
+#         #if the user is authenticated then a request to FENIX is made
+#         resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+#         #res contains the responde made to /api/fenix/vi/person (information about current user)
+#         user_data = resp.json()
 
-        return render_template("privPage.html", username=user_data['username'], name=user_data['name'])
+#         return render_template("privPage.html", username=user_data['username'], name=user_data['name'])
 
 #API
 @app.route('/api/videos/', methods=['POST'])
-def createNewVideo():
+def addNewVideo():
     if fenix_blueprint.session.authorized == True:
-        if request.method == "POST":
-            videoInfo = {}
-            try:
-                videoInfo = request.get_json()
-                #Get the ID of the user creating the video
-                resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
-                videoInfo["userId"] = resp.json()["username"]
-                url = components["video_db"] + 'addVideo'
-                msg = requests.post(url=url, data=videoInfo)
+        videoInfo = {}
+        try:
+            videoInfo = request.get_json()
+            #Get the ID of the user creating the video
+            resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+            videoInfo["userId"] = resp.json()["username"]
+            url = components["video_db"] + 'addVideo'
+            msg = requests.post(url=url, data=videoInfo)
 
-                if msg.status_code != 200:
-                    print('Error in posting on VideoDB!')
-            except:
-                print("Error receiving video info!")
-            return jsonify()
+            if msg.status_code != 200:
+                print('Error in posting on VideoDB!')
+        except:
+            print("Error receiving video info!")
+        return jsonify()
     else:
         redirect(url_for("fenix-example.login"))
 
 
 @app.route("/api/videos/", methods=['GET'])
-def returnsVideosJSON():
+def returnsListOfVideos():
     if fenix_blueprint.session.authorized == True:
-        if request.method == "GET":
-            videosDict = requests.get(components["video_db"]+'getVideos')
-            return {"videos": videosDict.json()}
+        url = components["video_db"]+'getVideos'
+        videosDict = requests.get(url=url)
+        return {"videos": videosDict.json()}
     else:
         redirect(url_for("fenix-example.login"))
 
@@ -137,10 +132,9 @@ def returnsVideosJSON():
 def returnSingleVideo(id):
     print(id)
     if fenix_blueprint.session.authorized == True:
-        if request.method == "GET":
-            url = components["video_db"]+'getVideo/'+str(id)
-            videoDict = requests.get(url=url)
-            return jsonify(videoDict.json())
+        url = components["video_db"]+'getVideo/'+str(id)
+        videoDict = requests.get(url=url)
+        return jsonify(videoDict.json())
     else:
         redirect(url_for("fenix-example.login"))
 
@@ -148,16 +142,35 @@ def returnSingleVideo(id):
 @app.route("/api/videos/<int:id>/question", methods=["GET"])
 def returnNumeberOfQuestions(id):
     if fenix_blueprint.session.authorized == True:
-        nr_question = {}
-        if request.method == "GET":
-            url = components["qa"]+'/video/'+str(id)+'/questions/number'
-            try:
-                nr_question = requests.get(url=url)
-            except:
-                print("Error getting")
-            return jsonify(nr_question.json())
+        questions = {}
+        url = components["qa"]+'/video/'+str(id)+'/getQuestions'
+        try:
+            questions = requests.get(url=url)
+        except:
+            print("Error getting")
+        return {"questions": questions.json()}
     else:
         redirect(url_for("fenix-example.login"))
+
+
+@app.route("/api/addQuestion/", methods=["POST"])
+def addNewQuestion():
+    if fenix_blueprint.session.authorized == True:
+        question = {}
+        try:
+            question = request.get_json()
+            print(question)
+            #Get the ID of the user creating the video
+            resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+            question["userId"] = resp.json()["username"]
+            url = components["qa"] + 'addQuestion'
+            msg = requests.post(url=url, data=question)
+        except:
+            print("Error receiving question info")
+        return jsonify()
+    else:
+        redirect(url_for("fenix-example.login"))
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

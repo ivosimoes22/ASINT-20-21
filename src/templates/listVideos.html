@@ -15,9 +15,8 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-              console.log(data)
-              $("#nquestions"+videoId).html(data['nr_questions'])
-              console.log("update the number of views on the table for"+videoId)
+              questionCount = Object.keys(data['questions']).length
+              $("#nquestions"+videoId).html(questionCount)
             },
           })
         }
@@ -31,8 +30,6 @@
               contentType: 'application/json',
               data: JSON.stringify(requestData),
               success: function(data){
-                  console.log("resppnse for video creation"+data)
-                  console.log(data)
                   updateVideoTable()
               }
           });
@@ -75,6 +72,8 @@
                     //checkUrl(newVideoUrl)
                     addNewVideo(newVideoUrl, newVideoTitle)
                   }
+                  document.getElementById("newVideoURL").value="";
+                  document.getElementById("newVideoTitle").value="";
               }
           )
         });
@@ -106,10 +105,10 @@
 
   <h3>Add a new Video</h3>
     <div class="ui input">
-      <input type="text" placeholder="Video URL" id="newVideoURL" required>
+      <input type="text" placeholder="Video URL" id="newVideoURL">
     </div>
     <div class="ui input">
-      <input type="text" placeholder="Title" id="newVideoTitle" required>
+      <input type="text" placeholder="Title" id="newVideoTitle">
     </div>
     <button class="ui button" id="buttonAddVideo">
       Add new Video

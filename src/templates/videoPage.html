@@ -15,13 +15,28 @@
         function getIDfromURL() {
             var url = window.location.href
             var urlVariables = url.split('/')
-            //console.log(urlVariables)
             var id = urlVariables[urlVariables.length-1]
-            //console.log(id)
             return id
         }
 
-        function getVideo() {
+        function convertSecondsToMinutes(time, q_id) {
+          var minutes = Math.floor(time / 60);
+          var seconds = time - minutes * 60;
+          seconds = Math.round(seconds + Number.EPSILON)
+
+          if ((seconds.toString()+'').length == 1) {
+            nsec = "0" + seconds.toString();
+          }
+          else {
+            nsec = seconds.toString()
+          }
+
+          newTime = minutes.toString()+':'+nsec
+          console.log(q_id)
+          $("#videoTime"+q_id).html(newTime)
+        }
+
+        function getVideo(vPlayer) {
           //Receive the video ID
           var video_id = getIDfromURL()
           var url
@@ -31,49 +46,199 @@
             dataType: "json",
             success: function (data) {
               document.getElementById("videoTitle").innerHTML = data["title"];
-
-              var vPlayer = videojs('videoPlayer')
               vPlayer.src({ "type": "video/youtube", "src": data["url"]})
               vPlayer.play()
             },
           })
         }
 
+        function addNewQuestion(questionBody, timestamp) {
+          video_id = getIDfromURL()
+          let requestData = {'text': questionBody, 'video_id': video_id, 'timestamp': timestamp}
+          $.ajax({
+              url: '/api/addQuestion/',
+              type: "POST",
+              dataType: "json",
+              contentType: 'application/json',
+              data: JSON.stringify(requestData),
+              success: function(data){
+                updateQuestionTable()
+              }
+          });
+        }
+
+        function updateQuestionTable() {
+          video_id = getIDfromURL()
+          $.ajax({
+              url: '/api/videos/'+video_id+'/question',
+              type: "GET",
+              dataType: "json",
+              success: function (data) {
+                    $('#questionsTable > tbody:last-child').empty()
+                    data["questions"].forEach(q => {
+                        $('#questionsTable > tbody:last-child').append('<tr><td id="videoTime'+q["q_id"]+'">xxx</td><td>' + q["q_text"]+'</td></tr>');
+                        convertSecondsToMinutes(q["timestamp"], q["q_id"])
+                  });
+              }
+          });
+        }
+
+        function validateQuestion(x) {
+            if (x === null || x.trim() === "") {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
         $(document).ready(function(){
-          getVideo()
+          var vPlayer = videojs('videoPlayer')
+          var pauseTime
+
+          //Get the data for the video
+          getVideo(vPlayer)
+          updateQuestionTable()
+          
+          $("#buttonVideoResume").hide();
+          $("#questionBody").hide();
+          $("#buttonSubmitQuestion").hide();
+  
+          $("#buttonVideoPause").click(function(){
+            vPlayer.pause()
+            pauseTime = vPlayer.currentTime()
+            console.log(pauseTime)
+            $("#buttonVideoPause").hide();
+            $("#buttonVideoResume").show();
+          })
+
+          $("#buttonVideoResume").click(function(){
+            vPlayer.currentTime(pauseTime)
+            vPlayer.play()
+            $("#buttonVideoResume").hide();
+            $("#buttonVideoPause").show();
+
+            $("#questionBody").hide();
+            $("#buttonSubmitQuestion").hide();
+            $("#buttonNewQuestion").show();
+
+            document.getElementById("questionBody").value="";
+          })
+
+          $("#buttonNewQuestion").click(function(){
+            $("#questionBody").show();
+            $("#buttonSubmitQuestion").show();
+            $("#buttonNewQuestion").hide();
+            $("#buttonVideoPause").hide();
+            $("#buttonVideoResume").show();
+            vPlayer.pause()
+            pauseTime = vPlayer.currentTime()
+            console.log(pauseTime)
+          })
+
+          $("#buttonSubmitQuestion").click(function(){
+            $("#questionBody").hide();
+            $("#buttonSubmitQuestion").hide();
+            $("#buttonNewQuestion").show();
+            questionBody = $("#questionBody").val()
+            
+            //console.log("T")
+            if (validateQuestion(questionBody)) {
+              addNewQuestion(questionBody, pauseTime)
+            }
+            
+            vPlayer.play()
+            $("#buttonVideoResume").hide();
+            $("#questionBody").hide();
+            $("#buttonVideoPause").show();
+            document.getElementById("questionBody").value="";           
+          })
         });
         
     </script>
 
     <style>
-      .center {
+      .centerVideo {
         margin: auto;
         width: 97%;
         padding: 10px;
       }
+
+      .centerElements {
+        margin: auto;
+        width: 98.5%;
+        padding: 10px;
+      }
+
+      .centerTable{
+        width: 90%;
+        padding: 10px;
+      }
+
+      /* #questionsTable {
+        width: 40%;
+      } */
     </style>
 
   </head>
   <body>
-      <div class="center">
+      <div class="centerElements">
         <h1 id="videoTitle"></h1>
       </div>
 
-      <div class="center">
-        <video  id="videoPlayer" controls 
-          class="video-js vjs-default-skin"
-          width="640"
-          data-setup='{ "autoplay": true, "preload": "auto", "techOrder": ["youtube"], "sources": [{ "type": "video/youtube" }'>
-        </video>
-      </div>
+      <div class="ui grid">
+        <div class="eight wide column">
+          <div class="centerVideo">
+            <video  id="videoPlayer" controls 
+            class="video-js vjs-default-skin"
+            width="640"
+            data-setup='{ "autoplay": true, "preload": "auto", "techOrder": ["youtube"], "sources": [{ "type": "video/youtube" }'>
+            </video>
+          </div>
+          <div class="centerVideo">
+            <button class="ui icon button" id="buttonVideoPause">
+              <i class="pause icon"></i>
+            </button>
+    
+            <button class="ui icon button" id="buttonVideoResume">
+              <i class="play icon"></i>
+            </button>
 
-      <div class="center">
-        <button class="ui icon button" id="buttonVideoPause">
-          <i class="pause icon"></i>
-        </button>
+            <button class="ui button" id="buttonNewQuestion">
+              New Question
+            </button>
+          </div>
+          <div class="ui grid">
+            <div class="twelve wide column">
+              <div class="centerVideo">
+                <div class="ui fluid input focus">
+                  <input type="text" placeholder="New Question" id="questionBody">
+                    <div style="margin:1%"><button class="ui button" id="buttonSubmitQuestion">
+                      Submit
+                    </button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
 
-        <button class="ui icon button" id="buttonVideoResume">
-          <i class="play icon"></i>
-        </button>
+        </div>
+        
+        <div class="eight wide column">
+          <div class="centerTable">
+            <h3> List of Questions</h3>
+            <div style="height: 330px; overflow: auto">
+              <table class="ui celled table selectable" id="questionsTable">
+                <thead>
+                  <tr>
+                    <th>Time</th>  <th>Question</th> <th>Info</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
+        
   </body>
