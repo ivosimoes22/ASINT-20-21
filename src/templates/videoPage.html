@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css"  href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.css">
+    <script  src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.js">  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-xmlrpc/0.4.3/jquery.xmlrpc.js"> </script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://vjs.zencdn.net/7.8.4/video-js.css" rel="stylesheet" />
+    <script src="http://vjs.zencdn.net/7.8.4/video.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.6.1/Youtube.min.js"></script>
+
+    <script>
+        function getIDfromURL() {
+            var url = window.location.href
+            var urlVariables = url.split('/')
+            console.log(urlVariables)
+            var id = urlVariables[urlVariables.length-1]
+            console.log(id)
+            return id
+        }
+
+        function getVideo() {
+          //Receive the video ID
+          var video_id = getIDfromURL()
+          $.ajax({
+            url: '/api/getVideo/'+video_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              document.getElementById("videoTitle").innerHTML = data["title"];
+            },
+          })
+        }
+
+        $(document).ready(function(){
+          getVideo()
+        });
+        
+    </script>
+
+</head>
+<body>
+    <h1 id="videoTitle"></h1>
+
+</body>

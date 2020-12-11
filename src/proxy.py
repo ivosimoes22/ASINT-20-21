@@ -81,6 +81,9 @@ def logout():
     print(res)
     return redirect(url_for("home_page"))
   
+@app.route('/video_page/<int:id>')
+def getVideoPage(id):
+    return render_template("videoPage.html")
 
 @app.route('/private')
 def private_page():
@@ -127,6 +130,18 @@ def returnsVideosJSON():
         if request.method == "GET":
             videosDict = requests.get(components["video_db"]+'getVideos')
             return {"videos": videosDict.json()}
+    else:
+        redirect(url_for("fenix-example.login"))
+
+
+@app.route("/api/getVideo/<int:id>", methods=["GET"])
+def returnSingleVideo(id):
+    print(id)
+    if fenix_blueprint.session.authorized == True:
+        if request.method == "GET":
+            url = components["video_db"]+'getVideo/'+str(id)
+            videoDict = requests.get(url=url)
+            return jsonify(videoDict.json())
     else:
         redirect(url_for("fenix-example.login"))
 

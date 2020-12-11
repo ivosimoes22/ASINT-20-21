@@ -57,6 +57,7 @@ def listVideosDict():
         videos.append(v)
     return videos
 
+
 def addNewVideoDB(url, title, description, userId):
     newVideo = Video(url=url, title=title, description=description, userId=userId)
 
@@ -67,6 +68,11 @@ def addNewVideoDB(url, title, description, userId):
     except:
         db_session.rollback()
         return None
+
+def returnSingleVideoDB(id):
+    video = db_session.query(Video).filter(Video.id==id).first()    
+    videoDict = video.to_dict()
+    return videoDict
 
 
 @app.route('/addVideo', methods=['POST'])
@@ -92,6 +98,17 @@ def getListVideos():
     except:
         abort(404)
     return jsonify(videos)
+
+@app.route('/getVideo/<int:id>', methods=["GET"])
+def returnSingleVideo(id):
+    video = {}
+    try:
+        video = returnSingleVideoDB(id)
+        print(video)
+    except:
+        print("Error")
+    return jsonify(video)
+        
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=4800, debug=True)
