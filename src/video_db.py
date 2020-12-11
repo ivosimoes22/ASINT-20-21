@@ -31,15 +31,14 @@ class Video(Base):
     id = Column(Integer, primary_key=True)
     url = Column(String, unique=True)
     title = Column(String)
-    description = Column(String)
     views = Column(Integer, default = 0)
     userId = Column(String)
 
     def __repr__(self):
-        return "<Video (Id=%d, URL=%s, Title=%s, Description=%s, Views=%d, User=%s>)" % (self.id, self.url, self.title, self.description, self.views, self.userId)
+        return "<Video (Id=%d, URL=%s, Title=%s, Views=%d, User=%s>)" % (self.id, self.url, self.title, self.views, self.userId)
 
     def to_dict(self):
-        return {'video_id': self.id, 'url': self.url, 'title': self.title, 'description': self.description, 'views': self.views, 'userId': self.userId}
+        return {'video_id': self.id, 'url': self.url, 'title': self.title, 'views': self.views, 'userId': self.userId}
 
 
 Base.metadata.create_all(engine) #Create tables for the data models
@@ -58,8 +57,8 @@ def listVideosDict():
     return videos
 
 
-def addNewVideoDB(url, title, description, userId):
-    newVideo = Video(url=url, title=title, description=description, userId=userId)
+def addNewVideoDB(url, title, userId):
+    newVideo = Video(url=url, title=title, userId=userId)
 
     try:
         db_session.add(newVideo)
@@ -80,7 +79,7 @@ def addNewVideo():
     if request.method == "POST":
         try:
             print(request.form["url"])
-            if addNewVideoDB(request.form["url"], request.form["title"], request.form["description"], request.form["userId"]) is not None:
+            if addNewVideoDB(request.form["url"], request.form["title"], request.form["userId"]) is not None:
                 print("New Video added with success")
             else:
                 print("Couldnt add video")

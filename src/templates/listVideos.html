@@ -23,7 +23,7 @@
         }
 
         function addNewVideo(url, title, description){
-          let requestData={'url': url, 'title': title, "description": description }
+          let requestData={'url': url, 'title': title}
           $.ajax({
               url: '/api/videos/',
               type: "POST",
@@ -53,7 +53,7 @@
                     $('#videosTable > tbody:last-child').empty()
                     data["videos"].forEach(v => {
                         console.log(v["url"]+" "+v["description"])
-                        $('#videosTable > tbody:last-child').append('<tr> <td>' + v["video_id"] + '</td><td>' + v["url"]+'</td><td>' + v["title"] + '</td><td>' + v["description"] + '</td><td id="nquestions'+v["video_id"]+'">xxx</td>' + '<td><button class="ui button" id="buttonGo" onClick=javascript:goToVideoPage('+v["video_id"]+');' +'>Go</button></td>'+'</tr>');
+                        $('#videosTable > tbody:last-child').append('<tr> <td>' + v["video_id"] + '</td><td>' + v["url"]+'</td><td>' + v["title"] + '</td><td id="nquestions'+v["video_id"]+'">xxx</td>' + '<td><button class="ui button" id="buttonGo" onClick=javascript:goToVideoPage('+v["video_id"]+');' +'>Go</button></td>'+'</tr>');
                         getNumberOfQuestions(v["video_id"])
                   });
               }
@@ -71,10 +71,9 @@
               function(){                  
                   newVideoUrl = $("#newVideoURL").val()
                   newVideoTitle = $("#newVideoTitle").val()
-                  newVideoDesc = $("#newVideoDescription").val()
-                  if (newVideoUrl && newVideoTitle && newVideoDesc) {
+                  if (newVideoUrl && newVideoTitle) {
                     //checkUrl(newVideoUrl)
-                    addNewVideo(newVideoUrl, newVideoTitle, newVideoDesc)
+                    addNewVideo(newVideoUrl, newVideoTitle)
                   }
               }
           )
@@ -95,7 +94,7 @@
   <table class="ui celled table selectable" id="videosTable" >
     <thead>
       <tr>
-        <th>ID</th>  <th>URL</th>  <th>Title</th>   <th>Description</th> <th>Questions</th> <th>Video Page</th>
+        <th>ID</th>  <th>URL</th>  <th>Title</th> <th>Questions</th> <th>Video Page</th>
       </tr>
     </thead>
     <tbody>
@@ -112,9 +111,6 @@
     <div class="ui input">
       <input type="text" placeholder="Title" id="newVideoTitle" required>
     </div>
-    <div class="ui input">
-        <input type="text" placeholder="Video Description" id="newVideoDescription" required>
-      </div>
     <button class="ui button" id="buttonAddVideo">
       Add new Video
     </button>
