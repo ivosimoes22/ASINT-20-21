@@ -11,24 +11,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.6.1/Youtube.min.js"></script>
 
     <script>
+
         function getIDfromURL() {
             var url = window.location.href
             var urlVariables = url.split('/')
-            console.log(urlVariables)
+            //console.log(urlVariables)
             var id = urlVariables[urlVariables.length-1]
-            console.log(id)
+            //console.log(id)
             return id
         }
 
         function getVideo() {
           //Receive the video ID
           var video_id = getIDfromURL()
+          var url
           $.ajax({
             url: '/api/getVideo/'+video_id,
             type: "GET",
             dataType: "json",
             success: function (data) {
               document.getElementById("videoTitle").innerHTML = data["title"];
+
+              var vPlayer = videojs('videoPlayer')
+              vPlayer.src({ "type": "video/youtube", "src": data["url"]})
+              vPlayer.play()
             },
           })
         }
@@ -39,8 +45,35 @@
         
     </script>
 
-</head>
-<body>
-    <h1 id="videoTitle"></h1>
+    <style>
+      .center {
+        margin: auto;
+        width: 97%;
+        padding: 10px;
+      }
+    </style>
 
-</body>
+  </head>
+  <body>
+      <div class="center">
+        <h1 id="videoTitle"></h1>
+      </div>
+
+      <div class="center">
+        <video  id="videoPlayer" controls 
+          class="video-js vjs-default-skin"
+          width="640"
+          data-setup='{ "autoplay": true, "preload": "auto", "techOrder": ["youtube"], "sources": [{ "type": "video/youtube" }'>
+        </video>
+      </div>
+
+      <div class="center">
+        <button class="ui icon button" id="buttonVideoPause">
+          <i class="pause icon"></i>
+        </button>
+
+        <button class="ui icon button" id="buttonVideoResume">
+          <i class="play icon"></i>
+        </button>
+      </div>
+  </body>
