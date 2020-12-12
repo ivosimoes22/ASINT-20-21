@@ -43,6 +43,24 @@
             }
         }
 
+        function getUserName(q_data) {
+          user_id = q_data["user_id"]
+          console.log(user_id)
+          $.ajax({
+            url: '/api/getUser/?id='+user_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              $('#questionInfo > tbody:last-child').empty()
+              $('#questionInfo > tbody:last-child').append('<tr><td>'+q_data["q_text"]+'</td><td id="videoTime'+q_data["q_id"]+'">xxx</td><td>'+q_data["user_id"]+'</td><td>' + data["name"]+ '</td></tr>')
+              convertSecondsToMinutes(q_data["timestamp"], q_data["q_id"])
+              $("#questionBody").hide();
+              $("#buttonSubmitQuestion").hide();
+              $("#questionInfo").show();
+            },
+          })
+        }
+
         function checkQuestion(q_id) {
           $.ajax({
             url: '/api/getQuestion/'+q_id,
@@ -50,6 +68,7 @@
             dataType: "json",
             success: function (data) {
               console.log(data["q_text"])
+              getUserName(data)
             },
           })
         }
@@ -112,6 +131,7 @@
           $("#buttonVideoResume").hide();
           $("#questionBody").hide();
           $("#buttonSubmitQuestion").hide();
+          $("#questionInfo").hide();
   
           $("#buttonVideoPause").click(function(){
             vPlayer.pause()
@@ -139,6 +159,7 @@
             $("#buttonNewQuestion").hide();
             $("#buttonVideoPause").hide();
             $("#buttonVideoResume").show();
+            $("#questionInfo").hide();
             vPlayer.pause()
             pauseTime = vPlayer.currentTime()
           })
@@ -158,6 +179,7 @@
             $("#buttonVideoResume").hide();
             $("#questionBody").hide();
             $("#buttonVideoPause").show();
+            $("#questionInfo").hide();
             document.getElementById("questionBody").value="";           
           })
         });
@@ -225,6 +247,17 @@
                     </button></div>
                 </div>
               </div>
+              <div class="centerVideo">
+                <table class="ui celled table selectable" id="questionInfo">
+                  <thead>
+                    <tr>
+                      <th>Question</th>  <th>Time</th> <th>User ID</th> <th>User Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+            </div>
             </div>
           </div>
           

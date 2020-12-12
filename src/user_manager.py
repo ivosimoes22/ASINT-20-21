@@ -1,3 +1,4 @@
+import requests
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date
@@ -56,6 +57,10 @@ def listUsersDict():
         users.append(u)
     return users
 
+def getUserDB(user_id):
+    user = db_session.query(User).filter(User.id==user_id).first()
+    return user.to_dict()
+
 
 def addNewUserDB(user_id, name):
     newUser = User(id=user_id,name=name)
@@ -80,7 +85,16 @@ def addNewUser():
         print("Error adding to user DB")
     return jsonify()       
 
-
+@app.route('/getUser/', methods=["GET"])
+def getUser():
+    user = {}
+    try:
+        user_id = request.args.get('id')
+        print(user_id)
+        user = getUserDB(user_id)
+    except:
+        print("Error accessing the DB")
+    return jsonify(user)
     
 
 if __name__ == '__main__':

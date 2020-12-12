@@ -38,6 +38,11 @@ app.register_blueprint(fenix_blueprint)
 
 loggedUsers = {}
 
+# def getCurrentUser():
+#     resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+#     user_data = resp.json()
+#     return user_data["username"]
+
 #User Authentication
 @app.route('/')
 def home_page():
@@ -101,6 +106,7 @@ def addNewVideo():
 
 @app.route("/api/videos/", methods=['GET'])
 def getListOfVideos():
+    print(fenix_blueprint.session.authorized)
     if fenix_blueprint.session.authorized == True:
         url = components["video_db"]+'getVideos'
         videosDict = requests.get(url=url)
@@ -111,7 +117,6 @@ def getListOfVideos():
 
 @app.route("/api/getVideo/<int:id>", methods=["GET"])
 def getSingleVideo(id):
-    print(id)
     if fenix_blueprint.session.authorized == True:
         url = components["video_db"]+'getVideo/'+str(id)
         videoDict = requests.get(url=url)
@@ -159,6 +164,18 @@ def getSingleQuestion(id):
         url = components["qa"]+'getQuestion/'+str(id)
         question = requests.get(url=url)
         return jsonify(question.json())
+    else:
+        redirect(url_for("fenix-example.login"))
+
+
+@app.route("/api/getUser/", methods=["GET"])
+def getUser():
+    if fenix_blueprint.session.authorized == True:
+        user_id = request.args.get('id')
+        print(user_id)
+        url = components["user_manager"]+'getUser/?id='+user_id
+        user = requests.get(url=url)
+        return jsonify(user.json())
     else:
         redirect(url_for("fenix-example.login"))
 
