@@ -49,7 +49,7 @@ def home_page():
             userInfo = {}
             userInfo["id"] = user_data["username"]
             userInfo["name"] = user_data["name"]
-            url = components["user_manager"] + 'addUser'
+            url = components["user_manager"] + 'user/add'
             msg = requests.post(url=url, data=userInfo)
 
             if msg.status_code != 200:
@@ -81,7 +81,7 @@ def getVideoPage(id):
 
 
 #API
-@app.route('/api/videos/', methods=['POST'])
+@app.route('/api/video/add', methods=['POST'])
 def addNewVideo():
     if fenix_blueprint.session.authorized == True:
         videoInfo = {}
@@ -90,7 +90,7 @@ def addNewVideo():
             #Get the ID of the user creating the video
             resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
             videoInfo["userId"] = resp.json()["username"]
-            url = components["video_db"] + 'addVideo'
+            url = components["video_db"] + 'video/add'
             msg = requests.post(url=url, data=videoInfo)
 
             if msg.status_code != 200:
@@ -102,31 +102,31 @@ def addNewVideo():
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/api/videos/", methods=['GET'])
+@app.route("/api/video/get", methods=['GET'])
 def getListOfVideos():
     if fenix_blueprint.session.authorized == True:
-        url = components["video_db"]+'getVideos'
+        url = components["video_db"]+'video/get'
         videosDict = requests.get(url=url)
         return {"videos": videosDict.json()}
     else:
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/api/getVideo/<int:id>", methods=["GET"])
+@app.route("/api/video/<int:id>/get", methods=["GET"])
 def getSingleVideo(id):
     if fenix_blueprint.session.authorized == True:
-        url = components["video_db"]+'getVideo/'+str(id)
+        url = components["video_db"]+'video/'+str(id)+'/get'
         videoDict = requests.get(url=url)
         return jsonify(videoDict.json())
     else:
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/api/videos/<int:id>/question", methods=["GET"])
+@app.route("/api/video/<int:id>/question/get", methods=["GET"])
 def getListOfQuestions(id):
     if fenix_blueprint.session.authorized == True:
         questions = {}
-        url = components["qa"]+'/video/'+str(id)+'/getQuestions'
+        url = components["qa"]+'/video/'+str(id)+'/question/get'
         try:
             questions = requests.get(url=url)
         except:
@@ -136,7 +136,7 @@ def getListOfQuestions(id):
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/api/addQuestion/", methods=["POST"])
+@app.route("/api/question/add", methods=["POST"])
 def addNewQuestion():
     if fenix_blueprint.session.authorized == True:
         question = {}
@@ -146,7 +146,7 @@ def addNewQuestion():
             #Get the ID of the user creating the video
             resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
             question["userId"] = resp.json()["username"]
-            url = components["qa"] + 'addQuestion'
+            url = components["qa"] + 'question/add'
             msg = requests.post(url=url, data=question)
         except:
             print("Error receiving question info")
@@ -155,22 +155,22 @@ def addNewQuestion():
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/api/getQuestion/<int:id>", methods=["GET"])
+@app.route("/api/question/<int:id>/get", methods=["GET"])
 def getSingleQuestion(id):
     if fenix_blueprint.session.authorized == True:
-        url = components["qa"]+'getQuestion/'+str(id)
+        url = components["qa"]+'question/'+str(id)+'/get'
         question = requests.get(url=url)
         return jsonify(question.json())
     else:
         redirect(url_for("fenix-example.login"))
 
 
-@app.route("/api/getUser/", methods=["GET"])
+@app.route("/api/user/get/", methods=["GET"])
 def getUser():
     if fenix_blueprint.session.authorized == True:
         user_id = request.args.get('id')
         print(user_id)
-        url = components["user_manager"]+'getUser/?id='+user_id
+        url = components["user_manager"]+'user/get/?id='+user_id
         user = requests.get(url=url)
         return jsonify(user.json())
     else:
@@ -191,11 +191,11 @@ def addNewAnswer():
     return jsonify()
 
 
-@app.route("/api/answer/get/<int:q_id>", methods=["GET"])
+@app.route("/api/answer/<int:q_id>/get", methods=["GET"])
 def getListOfAnswers(q_id):
     if fenix_blueprint.session.authorized == True:
         answers = {}
-        url = components["qa"]+'/answer/get/'+str(q_id)
+        url = components["qa"]+'/answer/'+str(q_id)+'/get'
         try:
             answers = requests.get(url=url)
         except:

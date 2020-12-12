@@ -120,7 +120,7 @@ def addNewAnswerDB(answerBody, videoId, user_id, q_id):
 
 
 #Endpoint functions
-@app.route('/video/<int:id>/getQuestions', methods=["GET"])
+@app.route('/video/<int:id>/question/get', methods=["GET"])
 def getQuestions(id):
     questions = {}
     try:
@@ -130,7 +130,7 @@ def getQuestions(id):
     return jsonify(questions)
 
 
-@app.route('/addQuestion', methods=["POST"])
+@app.route('/question/add', methods=["POST"])
 def addNewQuestion():
     try:
         if addNewQuestionDB(request.form["text"], request.form["video_id"], request.form["userId"], request.form["timestamp"]) is not None:
@@ -142,7 +142,7 @@ def addNewQuestion():
     return jsonify()
 
 
-@app.route('/getQuestion/<int:id>', methods=["GET"])
+@app.route('/question/<int:id>/get', methods=["GET"])
 def getSingleQuestion(id):
     question = {}
     try:
@@ -165,7 +165,7 @@ def addNewAnswer():
     return jsonify()
 
 
-@app.route('/answer/get/<int:q_id>', methods=["GET"])
+@app.route('/answer/<int:q_id>/get', methods=["GET"])
 def getAnswers(q_id):
     answers = {}
     try:

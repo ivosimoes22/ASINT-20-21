@@ -73,7 +73,7 @@ def addNewUserDB(user_id, name):
         db_session.rollback()
         return None
 
-@app.route('/addUser', methods=['POST'] )
+@app.route('/user/add', methods=['POST'] )
 def addNewUser():
     try:
         if addNewUserDB(request.form["id"], request.form["name"]) is not None:
@@ -85,7 +85,7 @@ def addNewUser():
         print("Error adding to user DB")
     return jsonify()       
 
-@app.route('/getUser/', methods=["GET"])
+@app.route('/user/get/', methods=["GET"])
 def getUser():
     user = {}
     try:

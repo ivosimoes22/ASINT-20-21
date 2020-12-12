@@ -47,7 +47,7 @@
           user_id = q_data["user_id"]
           //console.log(user_id)
           $.ajax({
-            url: '/api/getUser/?id='+user_id,
+            url: '/api/user/get/?id='+user_id,
             type: "GET",
             dataType: "json",
             success: function (data) {
@@ -56,6 +56,7 @@
               convertSecondsToMinutes(q_data["timestamp"], q_data["q_id"])
               $("#questionBody").hide();
               $("#buttonSubmitQuestion").hide();
+              $("#buttonNewQuestion").show();
               $("#questionInfo").show();
               $("#answersHeader").show();
               $("#answersTable").show();
@@ -74,7 +75,7 @@
 
         function checkQuestion(q_id) {
           $.ajax({
-            url: '/api/getQuestion/'+q_id,
+            url: '/api/question/'+q_id+'/get',
             type: "GET",
             dataType: "json",
             success: function (data) {
@@ -89,7 +90,7 @@
           var video_id = getIDfromURL()
           var url
           $.ajax({
-            url: '/api/getVideo/'+video_id,
+            url: '/api/video/'+video_id+'/get',
             type: "GET",
             dataType: "json",
             success: function (data) {
@@ -104,7 +105,7 @@
           video_id = getIDfromURL()
           let requestData = {'text': questionBody, 'video_id': video_id, 'timestamp': timestamp}
           $.ajax({
-              url: '/api/addQuestion/',
+              url: '/api/question/add',
               type: "POST",
               dataType: "json",
               contentType: 'application/json',
@@ -118,7 +119,7 @@
         function updateQuestionTable() {
           video_id = getIDfromURL()
           $.ajax({
-              url: '/api/videos/'+video_id+'/question',
+              url: '/api/video/'+video_id+'/question/get',
               type: "GET",
               dataType: "json",
               success: function (data) {
@@ -147,7 +148,7 @@
 
         function checkAnswer(q_id) {
           $.ajax({
-            url: '/api/answer/get/'+q_id,
+            url: '/api/answer/'+ q_id + '/get',
             type: "GET",
             dataType: "json",
             success: function (data) {
@@ -163,7 +164,7 @@
 
         function updateAnswerUserName(a_id, user_id) {
           $.ajax({
-            url: '/api/getUser/?id='+user_id,
+            url: '/api/user/get/?id='+user_id,
             type: "GET",
             dataType: "json",
             success: function (data) {
@@ -221,6 +222,7 @@
             $("#answersTable").hide();
             $("#answerBody").hide();
             $("#buttonSubmitAnswer").hide();
+            $("#buttonNewAnswer").hide();
             vPlayer.pause()
             pauseTime = vPlayer.currentTime()
           })

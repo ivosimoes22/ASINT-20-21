@@ -74,7 +74,7 @@ def getSingleVideoDB(id):
     return videoDict
 
 
-@app.route('/addVideo', methods=['POST'])
+@app.route('/video/add', methods=['POST'])
 def addNewVideo():
     try:
         print(request.form["url"])
@@ -89,7 +89,7 @@ def addNewVideo():
     return jsonify()
 
 
-@app.route('/getVideos', methods=['GET'])
+@app.route('/video/get', methods=['GET'])
 def getListVideos():
     try:
         videos = listVideosDict()
@@ -98,7 +98,7 @@ def getListVideos():
     return jsonify(videos)
 
 
-@app.route('/getVideo/<int:id>', methods=["GET"])
+@app.route('/video/<int:id>/get', methods=["GET"])
 def getSingleVideo(id):
     video = {}
     try:

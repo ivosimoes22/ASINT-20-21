@@ -11,7 +11,7 @@
 
         function getNumberOfQuestions(videoId) {
           $.ajax({
-            url: '/api/videos/'+videoId+'/question',
+            url: '/api/video/'+videoId+'/question/get',
             type: "GET",
             dataType: "json",
             success: function (data) {
@@ -24,7 +24,7 @@
         function addNewVideo(url, title, description){
           let requestData={'url': url, 'title': title}
           $.ajax({
-              url: '/api/videos/',
+              url: '/api/video/add',
               type: "POST",
               dataType: "json",
               contentType: 'application/json',
@@ -42,7 +42,7 @@
 
         function updateVideoTable() {
           $.ajax({
-              url: '/api/videos/',
+              url: '/api/video/get',
               type: "GET",
               dataType: "json",
               success: function (data) {
