@@ -32,8 +32,26 @@
           }
 
           newTime = minutes.toString()+':'+nsec
-          console.log(q_id)
           $("#videoTime"+q_id).html(newTime)
+        }
+
+        function validateQuestion(x) {
+            if (x === null || x.trim() === "") {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function checkQuestion(q_id) {
+          $.ajax({
+            url: '/api/getQuestion/'+q_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              console.log(data["q_text"])
+            },
+          })
         }
 
         function getVideo(vPlayer) {
@@ -76,19 +94,11 @@
               success: function (data) {
                     $('#questionsTable > tbody:last-child').empty()
                     data["questions"].forEach(q => {
-                        $('#questionsTable > tbody:last-child').append('<tr><td id="videoTime'+q["q_id"]+'">xxx</td><td>' + q["q_text"]+'</td></tr>');
+                        $('#questionsTable > tbody:last-child').append('<tr><td id="videoTime'+q["q_id"]+'">xxx</td><td>' + q["q_text"]+'<td><button class="ui button" id="buttonCheckQuestion" onClick=javascript:checkQuestion('+q["q_id"]+');>Open</button></td></tr>');
                         convertSecondsToMinutes(q["timestamp"], q["q_id"])
                   });
               }
           });
-        }
-
-        function validateQuestion(x) {
-            if (x === null || x.trim() === "") {
-                return false;
-            } else {
-                return true;
-            }
         }
 
         $(document).ready(function(){
@@ -106,7 +116,6 @@
           $("#buttonVideoPause").click(function(){
             vPlayer.pause()
             pauseTime = vPlayer.currentTime()
-            console.log(pauseTime)
             $("#buttonVideoPause").hide();
             $("#buttonVideoResume").show();
           })
@@ -132,7 +141,6 @@
             $("#buttonVideoResume").show();
             vPlayer.pause()
             pauseTime = vPlayer.currentTime()
-            console.log(pauseTime)
           })
 
           $("#buttonSubmitQuestion").click(function(){
@@ -226,7 +234,7 @@
         <div class="eight wide column">
           <div class="centerTable">
             <h3> List of Questions</h3>
-            <div style="height: 330px; overflow: auto">
+            <div style="height: 325px; overflow: auto">
               <table class="ui celled table selectable" id="questionsTable">
                 <thead>
                   <tr>

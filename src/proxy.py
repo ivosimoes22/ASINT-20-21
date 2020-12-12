@@ -41,7 +41,6 @@ loggedUsers = {}
 #User Authentication
 @app.route('/')
 def home_page():
-
     # verification if the user is logged in
     try:
         if fenix_blueprint.session.authorized != False:
@@ -57,12 +56,9 @@ def home_page():
                 print('Error in posting on User Manager!')
         
             return render_template("listVideos.html")
-            #print(loggedUsers)
-
-        #return app.send_static_file('welcomepage.html')
-        return render_template("welcomePage.html")
     except:
-        return render_template("welcomePage.html")
+        print("Session Expired")
+    return render_template("welcomePage.html")
 
 
 #User Authentication
@@ -80,21 +76,6 @@ def logout():
 def getVideoPage(id):
     return render_template("videoPage.html")
 
-# @app.route('/private')
-# def private_page():
-#     #this page can only be accessed by a authenticated user
-
-#     # verification of the user is  logged in
-#     if fenix_blueprint.session.authorized == False:
-#         #if not logged in browser is redirected to login page (in this case FENIX handled the login)
-#         return redirect(url_for("fenix-example.login"))
-#     else:
-#         #if the user is authenticated then a request to FENIX is made
-#         resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
-#         #res contains the responde made to /api/fenix/vi/person (information about current user)
-#         user_data = resp.json()
-
-#         return render_template("privPage.html", username=user_data['username'], name=user_data['name'])
 
 #API
 @app.route('/api/videos/', methods=['POST'])
@@ -119,7 +100,7 @@ def addNewVideo():
 
 
 @app.route("/api/videos/", methods=['GET'])
-def returnsListOfVideos():
+def getListOfVideos():
     if fenix_blueprint.session.authorized == True:
         url = components["video_db"]+'getVideos'
         videosDict = requests.get(url=url)
@@ -129,7 +110,7 @@ def returnsListOfVideos():
 
 
 @app.route("/api/getVideo/<int:id>", methods=["GET"])
-def returnSingleVideo(id):
+def getSingleVideo(id):
     print(id)
     if fenix_blueprint.session.authorized == True:
         url = components["video_db"]+'getVideo/'+str(id)
@@ -140,7 +121,7 @@ def returnSingleVideo(id):
 
 
 @app.route("/api/videos/<int:id>/question", methods=["GET"])
-def returnNumeberOfQuestions(id):
+def getListOfQuestions(id):
     if fenix_blueprint.session.authorized == True:
         questions = {}
         url = components["qa"]+'/video/'+str(id)+'/getQuestions'
@@ -168,6 +149,16 @@ def addNewQuestion():
         except:
             print("Error receiving question info")
         return jsonify()
+    else:
+        redirect(url_for("fenix-example.login"))
+
+
+@app.route("/api/getQuestion/<int:id>", methods=["GET"])
+def getSingleQuestion(id):
+    if fenix_blueprint.session.authorized == True:
+        url = components["qa"]+'getQuestion/'+str(id)
+        question = requests.get(url=url)
+        return jsonify(question.json())
     else:
         redirect(url_for("fenix-example.login"))
 

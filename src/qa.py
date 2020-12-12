@@ -73,6 +73,11 @@ def listQuestionsDict(video_id):
         questions.append(q)
     return questions
 
+def getSingleQuestionDB(q_id):
+    q = db_session.query(Question).filter(Question.id==q_id).first()
+    q_dict = q.to_dict()
+    return q_dict
+
 def getNumberOfQuestions(video_id):
     return db_session.query(Question).filter(Question.video_id==video_id).count()
 
@@ -111,8 +116,15 @@ def addNewQuestion():
     return jsonify()
 
 
-# @app.route('/getQuestions', methods=["POST"])
-# def getListQuestions
+@app.route('/getQuestion/<int:id>', methods=["GET"])
+def getSingleQuestion(id):
+    question = {}
+    try:
+        question = getSingleQuestionDB(id)
+    except:
+        print("Error getting question from DB")
+    return jsonify(question)
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=4900, debug=True)

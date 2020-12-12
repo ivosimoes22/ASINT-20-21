@@ -68,7 +68,7 @@ def addNewVideoDB(url, title, userId):
         db_session.rollback()
         return None
 
-def returnSingleVideoDB(id):
+def getSingleVideoDB(id):
     video = db_session.query(Video).filter(Video.id==id).first()    
     videoDict = video.to_dict()
     return videoDict
@@ -97,11 +97,12 @@ def getListVideos():
         abort(404)
     return jsonify(videos)
 
+
 @app.route('/getVideo/<int:id>', methods=["GET"])
-def returnSingleVideo(id):
+def getSingleVideo(id):
     video = {}
     try:
-        video = returnSingleVideoDB(id)
+        video = getSingleVideoDB(id)
         print(video)
     except:
         print("Error")
