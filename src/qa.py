@@ -92,6 +92,18 @@ def addNewQuestionDB(questionBody, videoId, user_id, timestamp):
         db_session.rollback()
         return None
 
+#Functions related with Answer Class
+def addNewAnswerDB(answerBody, videoId, user_id, q_id):
+    newAnswer = Answer(a_text=answerBody, video_id=videoId, user_id=user_id, q_id=q_id)
+
+    try:
+        db_session.add(newAnswer)
+        db_session.commit()
+        return newAnswer.id
+    except:
+        db_session.rollback()
+        return None
+
 
 #Endpoint functions
 @app.route('/video/<int:id>/getQuestions', methods=["GET"])
@@ -124,6 +136,18 @@ def getSingleQuestion(id):
     except:
         print("Error getting question from DB")
     return jsonify(question)
+
+
+@app.route('/answer/add', methods=["POST"])
+def addNewAnswer():
+    try:
+        if addNewAnswerDB(request.form["a_text"], request.form["video_id"], request.form["userId"], request.form["q_id"]) is not None:
+            print("New answer added to DB")
+        else:
+            print("Couldnt add answer")
+    except:
+        print("Error adding to AnswerDB")
+    return jsonify()
 
 
 if __name__ == '__main__':

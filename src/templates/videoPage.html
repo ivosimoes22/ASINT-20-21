@@ -35,7 +35,7 @@
           $("#videoTime"+q_id).html(newTime)
         }
 
-        function validateQuestion(x) {
+        function validateTextInput(x) {
             if (x === null || x.trim() === "") {
                 return false;
             } else {
@@ -45,7 +45,7 @@
 
         function getUserName(q_data) {
           user_id = q_data["user_id"]
-          console.log(user_id)
+          //console.log(user_id)
           $.ajax({
             url: '/api/getUser/?id='+user_id,
             type: "GET",
@@ -57,6 +57,25 @@
               $("#questionBody").hide();
               $("#buttonSubmitQuestion").hide();
               $("#questionInfo").show();
+              $("#answersHeader").show();
+              $("#answersTable").show();
+              $("#buttonNewAnswer").show();
+              $("#answerBody").hide();
+              $("#buttonSubmitAnswer").hide();
+
+            $("#buttonSubmitAnswer").click(function(){
+              $("#buttonNewAnswer").show();
+              $("#answerBody").hide();
+              $("#buttonSubmitAnswer").hide();
+
+              answerBody = $("#answerBody").val()
+
+              if (validateTextInput(answerBody)) {
+                addNewAnswer(q_data["q_id"], answerBody, q_data["video_id"])
+              }
+              document.getElementById("answerBody").value="";
+              
+            })
             },
           })
         }
@@ -67,7 +86,7 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-              console.log(data["q_text"])
+              //console.log(data["q_text"])
               getUserName(data)
             },
           })
@@ -120,6 +139,22 @@
           });
         }
 
+        function addNewAnswer(q_id, answerBody, video_id) {
+          console.log("Heyyyyyy")
+          let requestData = {'a_text': answerBody, 'video_id': video_id, 'q_id': q_id}
+          $.ajax({
+              url: '/api/answer/add',
+              type: "POST",
+              dataType: "json",
+              contentType: 'application/json',
+              data: JSON.stringify(requestData),
+              success: function(data){
+                console.log("Heyooo")
+                //updateQuestionTable()
+              }
+          });
+        }
+
         $(document).ready(function(){
           var vPlayer = videojs('videoPlayer')
           var pauseTime
@@ -132,6 +167,11 @@
           $("#questionBody").hide();
           $("#buttonSubmitQuestion").hide();
           $("#questionInfo").hide();
+          $("#answersTable").hide();
+          $("#buttonNewAnswer").hide();
+          $("#answersHeader").hide();
+          $("#answerBody").hide();
+          $("#buttonSubmitAnswer").hide();
   
           $("#buttonVideoPause").click(function(){
             vPlayer.pause()
@@ -160,6 +200,9 @@
             $("#buttonVideoPause").hide();
             $("#buttonVideoResume").show();
             $("#questionInfo").hide();
+            $("#answersTable").hide();
+            $("#answerBody").hide();
+            $("#buttonSubmitAnswer").hide();
             vPlayer.pause()
             pauseTime = vPlayer.currentTime()
           })
@@ -171,7 +214,7 @@
             questionBody = $("#questionBody").val()
             
             //console.log("T")
-            if (validateQuestion(questionBody)) {
+            if (validateTextInput(questionBody)) {
               addNewQuestion(questionBody, pauseTime)
             }
             
@@ -182,6 +225,20 @@
             $("#questionInfo").hide();
             document.getElementById("questionBody").value="";           
           })
+
+          $("#buttonNewAnswer").click(function(){
+            $("#buttonNewAnswer").hide();
+            $("#answerBody").show();
+            $("#buttonSubmitAnswer").show();
+          })
+
+          // $("#buttonSubmitAnswer").click(function(){
+          //   $("#buttonNewAnswer").show();
+          //   $("#answerBody").hide();
+          //   $("#buttonSubmitAnswer").hide();
+          //   document.getElementById("answerBody").value=""; 
+          // })
+
         });
         
     </script>
@@ -258,6 +315,19 @@
                   </tbody>
                 </table>
             </div>
+            <div class="centerVideo">
+              <button class="ui button" id="buttonNewAnswer">
+                New Answer
+              </button>
+            </div>
+            <div class="centerVideo">
+              <div class="ui fluid input focus">
+                <input type="text" placeholder="New Answer" id="answerBody">
+                  <div style="margin:1%"><button class="ui button" id="buttonSubmitAnswer">
+                    Submit
+                  </button></div>
+              </div>
+            </div>
             </div>
           </div>
           
@@ -277,6 +347,22 @@
                 <tbody>
                 </tbody>
               </table>
+            </div>
+          </div>
+          <div class="twelve wide column"></div>
+            <div class="centerTable">
+              <h3 id="answersHeader"> Answers</h3>
+              <div style="height: 325px; overflow: auto">
+                <table class="ui celled table selectable" id="answersTable">
+                  <thead>
+                    <tr>
+                      <th>User ID</th>  <th>User Name</th> <th>Answer</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
