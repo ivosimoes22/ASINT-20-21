@@ -54,7 +54,7 @@ class Answer(Base):
         return "<Answer (Id=%d, Text=%s, VideoId=%d, UserId=%s, QuestionId=%s)" %  (self.id, self.a_text, self.video_id, self.user_id, self.q_id)
 
     def to_dict(self):
-        return {'q_id': self.id, 'a_text': self.a_text, 'video_id': self.video_id, 'user_id': self.user_id, 'q_id': self.q_id}
+        return {'a_id': self.id, 'a_text': self.a_text, 'video_id': self.video_id, 'user_id': self.user_id, 'q_id': self.q_id}
 
 
 Base.metadata.create_all(engine) #Create tables for the data models
@@ -93,6 +93,20 @@ def addNewQuestionDB(questionBody, videoId, user_id, timestamp):
         return None
 
 #Functions related with Answer Class
+def listAns():
+    return db_session.query(Answer).all()
+
+def listAnswers(q_id):
+    return db_session.query(Answer).filter(Answer.q_id==q_id)
+
+def listAnswersDict(q_id):
+    answers = []
+    answerList = listAnswers(q_id)
+    for answer in answerList:
+        a = answer.to_dict()
+        answers.append(a)
+    return answers
+
 def addNewAnswerDB(answerBody, videoId, user_id, q_id):
     newAnswer = Answer(a_text=answerBody, video_id=videoId, user_id=user_id, q_id=q_id)
 
@@ -107,7 +121,7 @@ def addNewAnswerDB(answerBody, videoId, user_id, q_id):
 
 #Endpoint functions
 @app.route('/video/<int:id>/getQuestions', methods=["GET"])
-def returnNumberQuestions(id):
+def getQuestions(id):
     questions = {}
     try:
         questions = listQuestionsDict(id)
@@ -147,7 +161,18 @@ def addNewAnswer():
             print("Couldnt add answer")
     except:
         print("Error adding to AnswerDB")
+    print(listAns())
     return jsonify()
+
+
+@app.route('/answer/get/<int:q_id>', methods=["GET"])
+def getAnswers(q_id):
+    answers = {}
+    try:
+        answers = listAnswersDict(q_id)
+    except:
+        print("Error in get")
+    return jsonify(answers)
 
 
 if __name__ == '__main__':

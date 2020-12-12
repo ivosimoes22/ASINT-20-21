@@ -191,5 +191,18 @@ def addNewAnswer():
     return jsonify()
 
 
+@app.route("/api/answer/get/<int:q_id>", methods=["GET"])
+def getListOfAnswers(q_id):
+    if fenix_blueprint.session.authorized == True:
+        answers = {}
+        url = components["qa"]+'/answer/get/'+str(q_id)
+        try:
+            answers = requests.get(url=url)
+        except:
+            print("Error getting")
+        return {"answers": answers.json()}
+    else:
+        return jsonify()
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

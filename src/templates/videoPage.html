@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.6.1/Youtube.min.js"></script>
 
     <script>
-
+        var a_qid, a_vid;
         function getIDfromURL() {
             var url = window.location.href
             var urlVariables = url.split('/')
@@ -43,7 +43,7 @@
             }
         }
 
-        function getUserName(q_data) {
+        function updateQuestionInfo(q_data) {
           user_id = q_data["user_id"]
           //console.log(user_id)
           $.ajax({
@@ -63,19 +63,11 @@
               $("#answerBody").hide();
               $("#buttonSubmitAnswer").hide();
 
-            $("#buttonSubmitAnswer").click(function(){
-              $("#buttonNewAnswer").show();
-              $("#answerBody").hide();
-              $("#buttonSubmitAnswer").hide();
+              checkAnswer(q_data["q_id"])
 
-              answerBody = $("#answerBody").val()
+              a_qid = q_data["q_id"]
+              a_vid = q_data["video_id"]
 
-              if (validateTextInput(answerBody)) {
-                addNewAnswer(q_data["q_id"], answerBody, q_data["video_id"])
-              }
-              document.getElementById("answerBody").value="";
-              
-            })
             },
           })
         }
@@ -86,8 +78,8 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-              //console.log(data["q_text"])
-              getUserName(data)
+              //console.log(data["q_id"])
+              q_data = updateQuestionInfo(data)
             },
           })
         }
@@ -140,7 +132,6 @@
         }
 
         function addNewAnswer(q_id, answerBody, video_id) {
-          console.log("Heyyyyyy")
           let requestData = {'a_text': answerBody, 'video_id': video_id, 'q_id': q_id}
           $.ajax({
               url: '/api/answer/add',
@@ -149,9 +140,35 @@
               contentType: 'application/json',
               data: JSON.stringify(requestData),
               success: function(data){
-                console.log("Heyooo")
-                //updateQuestionTable()
+                checkAnswer(q_id)
               }
+          });
+        }
+
+        function checkAnswer(q_id) {
+          $.ajax({
+            url: '/api/answer/get/'+q_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              console.log(data)
+              $('#answersTable > tbody:last-child').empty()
+                    data["answers"].forEach(a => {
+                        $('#answersTable > tbody:last-child').append('<tr><td>'+ a["user_id"] +'</td><td id="answerUserName' + a["a_id"]+'">xxx</td><td>' + a["a_text"] +'</td></tr>');
+                    updateAnswerUserName(a["a_id"], a["user_id"])
+              });
+            }
+          });
+        }
+
+        function updateAnswerUserName(a_id, user_id) {
+          $.ajax({
+            url: '/api/getUser/?id='+user_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              $("#answerUserName"+a_id).html(data["name"])
+            }
           });
         }
 
@@ -200,6 +217,7 @@
             $("#buttonVideoPause").hide();
             $("#buttonVideoResume").show();
             $("#questionInfo").hide();
+            $("#answersHeader").hide();
             $("#answersTable").hide();
             $("#answerBody").hide();
             $("#buttonSubmitAnswer").hide();
@@ -231,13 +249,21 @@
             $("#answerBody").show();
             $("#buttonSubmitAnswer").show();
           })
+          
+          $("#buttonSubmitAnswer").click(function(){
+              $("#buttonNewAnswer").show();
+              $("#answerBody").hide();
+              $("#buttonSubmitAnswer").hide();
 
-          // $("#buttonSubmitAnswer").click(function(){
-          //   $("#buttonNewAnswer").show();
-          //   $("#answerBody").hide();
-          //   $("#buttonSubmitAnswer").hide();
-          //   document.getElementById("answerBody").value=""; 
-          // })
+              answerBody = $("#answerBody").val()
+
+              if (validateTextInput(answerBody)) {
+                console.log(a_qid)
+                addNewAnswer(a_qid, answerBody, a_vid)
+              }
+              document.getElementById("answerBody").value="";
+              
+            })
 
         });
         
