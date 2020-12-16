@@ -204,5 +204,30 @@ def getListOfAnswers(q_id):
     else:
         return jsonify()
 
+
+@app.route("/api/video/view/<int:id>/add", methods=["PUT"])
+def addVideoView(id):
+    if fenix_blueprint.session.authorized == True:
+        resp = {}
+        url = components["video_db"]+'video/view/'+str(id)+'/add'
+        try:
+            resp = requests.put(url=url)
+        except:
+            print("Error in put")
+
+        #Increase the view also for the user
+        user_resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
+        url = components["user_manager"]+'user/view/add/?id='+user_resp.json()["username"]
+
+        try:
+            user_resp = requests.put(url=url)
+        except:
+            print("Error in put")
+
+        return jsonify(resp.json())
+    else:
+        return jsonify()
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

@@ -173,6 +173,19 @@
           });
         }
 
+        function increaseViews() {
+          video_id = getIDfromURL()
+          $.ajax({
+            url: '/api/video/view/'+video_id+'/add',
+            type: "PUT",
+            dataType: "json",
+            success: function (data) {
+              $("#views").html(data["views"])
+              console.log(data["views"])
+            },
+          })
+        }
+
         $(document).ready(function(){
           var vPlayer = videojs('videoPlayer')
           var pauseTime
@@ -180,6 +193,7 @@
           //Get the data for the video
           getVideo(vPlayer)
           updateQuestionTable()
+          increaseViews()
           
           $("#buttonVideoResume").hide();
           $("#questionBody").hide();
@@ -310,6 +324,7 @@
             </video>
           </div>
           <div class="centerVideo">
+            
             <button class="ui icon button" id="buttonVideoPause">
               <i class="pause icon"></i>
             </button>
@@ -321,6 +336,10 @@
             <button class="ui button" id="buttonNewQuestion">
               New Question
             </button>
+
+            <div class="ui label" >
+              <i class="eye icon"></i>Views: <i id="views">0</i>
+            </div>
           </div>
           <div class="ui grid">
             <div class="twelve wide column">

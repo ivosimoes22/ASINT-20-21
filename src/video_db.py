@@ -73,6 +73,15 @@ def getSingleVideoDB(id):
     videoDict = video.to_dict()
     return videoDict
 
+def newView(id):
+    v = db_session.query(Video).filter(Video.id==id).first()
+    v.views+=1
+    n_view = v.views
+    db_session.commit()
+    db_session.close()
+    print(listVideosDict())
+    return n_view
+
 
 @app.route('/video/add', methods=['POST'])
 def addNewVideo():
@@ -85,7 +94,7 @@ def addNewVideo():
     except:
         print("Error addding to VideoDB")
     
-    print(listVideosDict())
+    #print(listVideosDict())
     return jsonify()
 
 
@@ -107,6 +116,16 @@ def getSingleVideo(id):
     except:
         print("Error")
     return jsonify(video)
+
+
+@app.route('/video/view/<int:id>/add', methods=["PUT"])
+def addNewView(id):
+    try:
+        return {"id": id, "views": newView(id)}
+    except:
+        print("Error")
+        return jsonify()
+
         
 
 if __name__ == '__main__':

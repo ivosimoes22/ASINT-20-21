@@ -32,12 +32,13 @@ class User(Base):
     __tablename__ = 'User'
     id = Column(String, primary_key=True)
     name = Column(String)
+    views = Column(Integer, default=0)
 
     def __repr__(self):
-        return "<User (id=%s, name=%s>)" % (self.id, self.name)
+        return "<User (id=%s, name=%s>, views=%d)" % (self.id, self.name, self.views)
 
     def to_dict(self):
-        return {"user_id": self.id, "name": self.name}
+        return {"user_id": self.id, "name": self.name, 'views': self.views}
 
 
 Base.metadata.create_all(engine) #Create tables for the data models
@@ -73,6 +74,15 @@ def addNewUserDB(user_id, name):
         db_session.rollback()
         return None
 
+def newView(id):
+    v = db_session.query(User).filter(User.id==id).first()
+    v.views +=1
+    n_view = v.views
+    db_session.commit()
+    db_session.close()
+    print(listUsers())
+    return n_view
+
 @app.route('/user/add', methods=['POST'] )
 def addNewUser():
     try:
@@ -96,6 +106,17 @@ def getUser():
         print("Error accessing the DB")
     return jsonify(user)
     
+
+@app.route('/user/view/add/', methods=["PUT"])
+def addNewView():
+    user_id = request.args.get('id')
+    
+    try:
+        return {"views": newView(user_id)}
+    except:
+        print("Error")
+        return jsonify()
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=4700)
