@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css"  href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.css">
+    <script  src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.js">  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-xmlrpc/0.4.3/jquery.xmlrpc.js"> </script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+    <script>
+        function updateUsersTable() {
+          $.ajax({
+              url: '/admin/api/users/get',
+              type: "GET",
+              dataType: "json",
+              success: function (data) {
+                    $('#usersTable > tbody:last-child').empty()
+                    data["users"].forEach(u => {
+                        $('#usersTable > tbody:last-child').append('<tr><td>'+u["user_id"]+'</td><td>' + u["name"]+'</td><td><button class="ui button" id="buttonCheckUserStats" onClick=javascript:getUserStats(\''+u["user_id"]+'\');' +'>Open</button></td>'+'</tr>');
+                  });
+              }
+          });
+        }
+
+        function getUserStats(user_id) {
+            console.log(user_id)
+            $.ajax({
+            url: '/api/user/get/?id='+user_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $('#usersTableStats > tbody:last-child').empty()
+                $('#usersTableStats > tbody:last-child').append('<tr><td>'+data["views"]+'</td><td>' + data["n_videos"]+ '</td><td>'+ data["n_questions"] + '</td><td>'+ data["n_answers"] +'</td></tr>');
+                $("#usersTableStats").show();
+            }
+          });
+        }
+
+        function getUserViews(user_id) {
+            $.ajax({
+            url: '/api/user/get/?id='+user_id,
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+              $("#answerUserName"+a_id).html(data["name"])
+            }
+          });
+        }
+
+        $(document).ready(function(){
+            $("#usersTableStats").hide();
+            updateUsersTable()
+        });
+
+    </script>
+
+</head>
+<body>
+    <h1>User Statistics</h1>
+
+    <div class="ui grid">
+        <div class="eight wide column">
+            <table class="ui celled table selectable" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>User ID</th>  <th>Name</th> <th>Stats</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+        </div>
+        <div class="eight wide column">
+            <table class="ui celled table selectable" id="usersTableStats">
+                <thead>
+                  <tr>
+                    <th>Total Views</th>  <th>Videos Registered</th> <th>Questions</th> <th>Answers</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+        </div>
+    </div>
+</body>
+</html>

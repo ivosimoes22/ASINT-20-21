@@ -33,12 +33,15 @@ class User(Base):
     id = Column(String, primary_key=True)
     name = Column(String)
     views = Column(Integer, default=0)
+    videos = Column(Integer, default=0)
+    questions = Column(Integer, default=0)
+    answers = Column(Integer, default=0)
 
     def __repr__(self):
-        return "<User (id=%s, name=%s>, views=%d)" % (self.id, self.name, self.views)
+        return "<User (id=%s, name=%s>, views=%d, videos=%d, questions=%d, answers=%d)" % (self.id, self.name, self.views, self.videos, self.questions, self.answers)
 
     def to_dict(self):
-        return {"user_id": self.id, "name": self.name, 'views': self.views}
+        return {"user_id": self.id, "name": self.name, "views": self.views, "n_videos": self.videos, "n_questions": self.questions, "n_answers": self.answers}
 
 
 Base.metadata.create_all(engine) #Create tables for the data models
@@ -75,13 +78,41 @@ def addNewUserDB(user_id, name):
         return None
 
 def newView(id):
-    v = db_session.query(User).filter(User.id==id).first()
-    v.views +=1
-    n_view = v.views
+    u = db_session.query(User).filter(User.id==id).first()
+    u.views +=1
+    n_view = u.views
     db_session.commit()
     db_session.close()
     print(listUsers())
     return n_view
+
+def newVideo(id):
+    u = db_session.query(User).filter(User.id==id).first()
+    u.videos +=1
+    n_videos = u.videos
+    db_session.commit()
+    db_session.close()
+    print(listUsers())
+    return n_videos
+
+def newQuestion(id):
+    u = db_session.query(User).filter(User.id==id).first()
+    u.questions +=1
+    n_questions = u.questions
+    db_session.commit()
+    db_session.close()
+    print(listUsers())
+    return n_questions
+
+def newAnswer(id):
+    u = db_session.query(User).filter(User.id==id).first()
+    u.answers +=1
+    n_answers = u.answers
+    db_session.commit()
+    db_session.close()
+    print(listUsers())
+    return n_answers
+
 
 @app.route('/user/add', methods=['POST'] )
 def addNewUser():
@@ -116,6 +147,47 @@ def addNewView():
     except:
         print("Error")
         return jsonify()
+
+@app.route('/user/video/add/', methods=["PUT"])
+def addNewVideo():
+    user_id = request.args.get('id')
+    
+    try:
+        return {"videos": newVideo(user_id)}
+    except:
+        print("Error")
+        return jsonify()
+
+
+@app.route('/user/question/add/', methods=["PUT"])
+def addNewQuestion():
+    user_id = request.args.get('id')
+    
+    try:
+        return {"questions": newQuestion(user_id)}
+    except:
+        print("Error")
+        return jsonify()
+
+
+@app.route('/user/answer/add/', methods=["PUT"])
+def addNewAnswer():
+    user_id = request.args.get('id')
+    
+    try:
+        return {"answers": newAnswer(user_id)}
+    except:
+        print("Error")
+        return jsonify()
+
+
+@app.route('/users/get', methods=["GET"])
+def getListUsers():
+    try:
+        users = listUsersDict()
+    except:
+        abort(404)
+    return jsonify(users)
 
 
 if __name__ == '__main__':

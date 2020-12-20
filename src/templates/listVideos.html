@@ -76,34 +76,56 @@
                   document.getElementById("newVideoTitle").value="";
               }
           )
+          $("#buttonUserStats").click(
+              function(){
+                  window.location.href = '/admin/user_stats'
+              }
+          )
         });
 
     </script>
 
-</head>
+    <style>
+      .rightMain{
+        float:right;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
 
-<div style="position: absolute; left:93%; top:1%;">
-  <button class="ui button" id="buttonlogout">
-      Logout
-    </button>
-</div>
+  <div class="rightMain">
 
-<body>
-  <h3>List of videos</h3>
-  <table class="ui celled table selectable" id="videosTable" >
-    <thead>
-      <tr>
-        <th>ID</th>  <th>URL</th>  <th>Title</th> <th>Questions</th> <th>Video Page</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-  <button class="ui button" id="buttonUpdateVideotable">
-    Update List
-  </button>
+    {% if isAdmin %}
+    
+      <button class="ui button" id="buttonUserStats">
+        User Statistics
+      </button>
+      <button class="ui button" id="buttonLogs">
+        Logs
+      </button>
 
-  <h3>Add a new Video</h3>
+    {% endif %}
+
+    <button class="ui button" id="buttonlogout">
+        Logout
+      </button>
+    </div>
+
+  <body>    
+    <h3>List of videos</h3>
+
+    <table class="ui celled table selectable" id="videosTable" >
+      <thead>
+        <tr>
+          <th>ID</th>  <th>URL</th>  <th>Title</th> <th>Questions</th> <th>Video Page</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+
+    <h3>Add a new Video</h3>
     <div class="ui input">
       <input type="text" placeholder="Video URL" id="newVideoURL">
     </div>
@@ -113,9 +135,5 @@
     <button class="ui button" id="buttonAddVideo">
       Add new Video
     </button>
-
-  <!-- <div style="position: absolute; left:90%; top:10%;">
-    <button class="ui button" id="buttonlogout">
-        Logout
-      </button>
-</div> -->
+  </body>
+</html>

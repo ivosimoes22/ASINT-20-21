@@ -125,7 +125,7 @@
               success: function (data) {
                     $('#questionsTable > tbody:last-child').empty()
                     data["questions"].forEach(q => {
-                        $('#questionsTable > tbody:last-child').append('<tr><td id="videoTime'+q["q_id"]+'">xxx</td><td>' + q["q_text"]+'<td><button class="ui button" id="buttonCheckQuestion" onClick=javascript:checkQuestion('+q["q_id"]+');>Open</button></td></tr>');
+                        $('#questionsTable > tbody:last-child').append('<tr><td id="videoTime'+q["q_id"]+'">xxx</td><td>' + q["q_text"]+'</td><td><button class="ui button" id="buttonCheckQuestion" onClick=javascript:checkQuestion('+q["q_id"]+');>Open</button></td></tr>');
                         convertSecondsToMinutes(q["timestamp"], q["q_id"])
                   });
               }
