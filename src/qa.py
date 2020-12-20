@@ -1,19 +1,19 @@
-from time import time
 import requests
 from requests.sessions import Request
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date, Time, Float
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import query_expression, relationship, scoped_session
-
+from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-from os import abort, path, times
-
+from os import path
 from flask import Flask
 from flask import jsonify
 from flask import request
-from sqlalchemy.sql.sqltypes import Float, Time
+from sqlalchemy.sql.sqltypes import Float
+from datetime import datetime
+
+
+logs = "http://127.0.0.1:4600/"
 
 app = Flask(__name__)
 
@@ -120,6 +120,20 @@ def addNewAnswerDB(answerBody, videoId, user_id, q_id):
 
 
 #Endpoint functions
+@app.before_request
+def beforeRequest():
+    log = {}
+    log["timestamp"] = str(datetime.now())
+    log["request"] = str(request.url) + ' [' + str(request.method) + ']'
+    url = logs+'store/message_events'
+
+    try:
+        resp = requests.post(url=url, data=log)
+    except:
+        print("Error in Post")
+    return
+
+
 @app.route('/video/<int:id>/question/get', methods=["GET"])
 def getQuestions(id):
     questions = {}
@@ -133,8 +147,20 @@ def getQuestions(id):
 @app.route('/question/add', methods=["POST"])
 def addNewQuestion():
     try:
-        if addNewQuestionDB(request.form["text"], request.form["video_id"], request.form["userId"], request.form["timestamp"]) is not None:
+        qid = addNewQuestionDB(request.form["text"], request.form["video_id"], request.form["userId"], request.form["timestamp"]) 
+        if qid is not None:
             print("New question added to DB")
+
+            #Add data creation Log
+            data = {"timestamp": str(datetime.now()), "d_type": "Question", "user": request.form["userId"]}
+            data["d_content"] = 'QuestionID: ' + str(qid) + '; Body: ' + request.form["text"] + '; VideoID: ' + str(request.form["video_id"]) + '; Timestamp: ' + str(request.form["timestamp"])
+
+            try:
+                resp = requests.post(url=logs+'store/data_events', data=data)
+            except:
+                print("Error in POST")
+
+
         else:
             print("Couldnt add question")
     except:
@@ -155,8 +181,21 @@ def getSingleQuestion(id):
 @app.route('/answer/add', methods=["POST"])
 def addNewAnswer():
     try:
-        if addNewAnswerDB(request.form["a_text"], request.form["video_id"], request.form["userId"], request.form["q_id"]) is not None:
+        aid = addNewAnswerDB(request.form["a_text"], request.form["video_id"], request.form["userId"], request.form["q_id"])
+        if aid is not None:
             print("New answer added to DB")
+
+            #Add data creation Log
+            data = {"timestamp": str(datetime.now()), "d_type": "Answer", "user": request.form["userId"]}
+            data["d_content"] = 'AnswerID: ' + str(aid) + '; Body: ' + request.form["a_text"] + '; VideoID: ' + str(request.form["video_id"]) + '; QuestionID: ' + str(request.form["q_id"])
+
+            try:
+                resp = requests.post(url=logs+'store/data_events', data=data)
+            except:
+                print("Error in POST")
+
+
+
         else:
             print("Couldnt add answer")
     except:

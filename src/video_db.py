@@ -1,17 +1,17 @@
-from enum import unique
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, scoped_session
-
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import scoped_session
+from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from os import abort, path
-
 from flask import Flask
 from flask import jsonify
 from flask import request
+import json
+
+logs = "http://127.0.0.1:4600/"
 
 app = Flask(__name__)
 
@@ -63,7 +63,7 @@ def addNewVideoDB(url, title, userId):
     try:
         db_session.add(newVideo)
         db_session.commit()
-        return newVideo.url
+        return newVideo.id
     except:
         db_session.rollback()
         return None
@@ -82,13 +82,38 @@ def newView(id):
     print(listVideosDict())
     return n_view
 
+#Endpoint functions
+@app.before_request
+def beforeRequest():
+    log = {}
+    log["timestamp"] = str(datetime.now())
+    log["request"] = str(request.url) + ' [' + str(request.method) + ']'
+    url = logs+'store/message_events'
+
+    try:
+        resp = requests.post(url=url, data=log)
+    except:
+        print("Error in Post")
+    return
+
 
 @app.route('/video/add', methods=['POST'])
 def addNewVideo():
     try:
         print(request.form["url"])
-        if addNewVideoDB(request.form["url"], request.form["title"], request.form["userId"]) is not None:
+        vid = addNewVideoDB(request.form["url"], request.form["title"], request.form["userId"])
+        if vid is not None:
             print("New Video added with success")
+
+            #Add data creation Log
+            data = {"timestamp": str(datetime.now()), "d_type": "Video", "user": request.form["userId"]}
+            data["d_content"] = 'VideoID: ' + str(vid) + '; Url: ' + request.form["url"] + '; Title: ' + request.form["title"]
+            try:
+                resp = requests.post(url=logs+'store/data_events', data=data)
+            except:
+                print("Error in POST")
+
+
         else:
             print("Couldnt add video")
     except:

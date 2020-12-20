@@ -5,6 +5,7 @@ from flask import render_template
 from flask import request
 from flask import jsonify, url_for
 from flask import session
+from datetime import datetime
 import requests
 
 #from user_manager import *
@@ -16,6 +17,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
 components = {
+    'logs': "http://127.0.0.1:4600/",
     'user_manager': "http://127.0.0.1:4700/",
     'video_db': "http://127.0.0.1:4800/",
     'qa': "http://127.0.0.1:4900/"
@@ -44,6 +46,19 @@ def getCurrentUser():
     user_data = resp.json()
     return user_data
 
+
+@app.before_request
+def beforeRequest():
+    log = {}
+    log["timestamp"] = str(datetime.now())
+    log["request"] = str(request.url) + ' [' + str(request.method) + ']'
+    url = components["logs"]+'store/message_events'
+
+    try:
+        resp = requests.post(url=url, data=log)
+    except:
+        print("Error in Post")
+    return
 
 #User Authentication
 @app.route('/')
@@ -265,12 +280,23 @@ def addVideoView(id):
 
 ##Admin Pages##
 @app.route('/admin/user_stats')
-def getUserStats():
+def getUserStatsPage():
     if fenix_blueprint.session.authorized == False:
         return render_template("welcomePage.html")
     else:
         if getCurrentUser()["username"] in adminUsers["user_id"]:
             return render_template("userStats.html")
+        else:
+            return redirect(url_for("home_page"))
+
+
+@app.route('/admin/logs')
+def getLogsPage():
+    if fenix_blueprint.session.authorized == False:
+        return render_template("welcomePage.html")
+    else:
+        if getCurrentUser()["username"] in adminUsers["user_id"]:
+            return render_template("logs.html")
         else:
             return redirect(url_for("home_page"))
 
@@ -285,6 +311,34 @@ def getListOfUsers():
         except:
             print("Error getting")
         return {"users": users.json()}
+    else:
+        return jsonify()
+
+
+@app.route('/admin/api/logs/message_events/get', methods=["GET"])
+def getListOfMessageEvents():
+    if fenix_blueprint.session.authorized == True and getCurrentUser()["username"] in adminUsers["user_id"]:
+        msgs = {}
+        url = components["logs"]+'message_events/get'
+        try:
+            msgs = requests.get(url=url)
+        except:
+            print("Error getting")
+        return {"msgs": msgs.json()}
+    else:
+        return jsonify()
+
+
+@app.route('/admin/api/logs/data_events/get', methods=["GET"])
+def getListOfDataEvents():
+    if fenix_blueprint.session.authorized == True and getCurrentUser()["username"] in adminUsers["user_id"]:
+        data = {}
+        url = components["logs"]+'data_events/get'
+        try:
+            data = requests.get(url=url)
+        except:
+            print("Error getting")
+        return {"data": data.json()}
     else:
         return jsonify()
 

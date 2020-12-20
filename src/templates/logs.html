@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css"  href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.css">
+        <script  src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.js">  </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-xmlrpc/0.4.3/jquery.xmlrpc.js"> </script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+        <script>
+            function updateMessagesTable() {
+                $.ajax({
+                    url: '/admin/api/logs/message_events/get',
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                            $('#msgTable > tbody:last-child').empty()
+                            data["msgs"].forEach(m => {
+                                console.log(m["request"])
+                                $('#msgTable > tbody:last-child').append('<tr><td>'+m["timestamp"]+'</td><td>' + String(m["request"])+ '</td></tr>');
+                        });
+                    }
+                });
+            }
+
+            function updateDataCreationTable() {
+                $.ajax({
+                    url: '/admin/api/logs/data_events/get',
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                            $('#dataCreationTable > tbody:last-child').empty()
+                            data["data"].forEach(d => {
+                                $('#dataCreationTable > tbody:last-child').append('<tr><td>'+d["timestamp"]+'</td><td>' + d["d_type"]+'</td><td>'+ d["d_content"]+'</td><td>'+ d["user"] +'</td></tr>');
+                        });
+                    }
+                });
+            }
+
+            $(document).ready(function(){
+                updateMessagesTable()
+                updateDataCreationTable()
+            });
+
+        </script>
+
+
+
+    </head>
+    <body>
+        <div class="ui grid">
+            <div class="eight wide column">
+                <h1>Message Events</h1>
+                <div style="height: 800px; overflow: auto;">
+                <table class="ui celled table selectable" id="msgTable">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th> <th>Log</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+
+
+            <div class="eight wide column">
+                <h1>Data Creation Events</h1>
+                <div style="height: 800px; overflow: auto;">
+                <table class="ui celled table selectable" id="dataCreationTable">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th> <th>Type</th> <th>Content</th> <th>User</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>
+
+

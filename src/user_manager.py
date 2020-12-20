@@ -1,18 +1,16 @@
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Date
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, scoped_session
-
-import datetime
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import scoped_session
+from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from os import path
-
 from flask import Flask
 from flask import jsonify
 from flask import request
 
+logs = "http://127.0.0.1:4600/"
 
 app = Flask(__name__)
 
@@ -113,12 +111,35 @@ def newAnswer(id):
     print(listUsers())
     return n_answers
 
+#Endpoint functions
+@app.before_request
+def beforeRequest():
+    log = {}
+    log["timestamp"] = str(datetime.now())
+    log["request"] = str(request.url) + ' [' + str(request.method) + ']'
+    url = logs+'store/message_events'
+
+    try:
+        resp = requests.post(url=url, data=log)
+    except:
+        print("Error in Post")
+    return
+
 
 @app.route('/user/add', methods=['POST'] )
 def addNewUser():
     try:
         if addNewUserDB(request.form["id"], request.form["name"]) is not None:
             print("New User added to the Database")
+
+            data = {"timestamp": str(datetime.now()), "d_type": "User", "user": request.form["id"]}
+            data["d_content"] = 'Username: ' + request.form["id"] + '; Name: ' + request.form["name"]
+
+            try:
+                resp = requests.post(url=logs+'store/data_events', data=data)
+            except:
+                print("Error in POST")
+
         else:
             print("User Already in")
             print(listUsersDict())
