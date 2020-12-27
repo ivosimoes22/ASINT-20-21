@@ -15,7 +15,7 @@ import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
-
+#All the other python files
 components = {
     'logs': "http://127.0.0.1:4600/",
     'user_manager': "http://127.0.0.1:4700/",
@@ -80,7 +80,7 @@ def home_page():
             if user_data["username"] in adminUsers["user_id"]:
                 print("You are an ADMIN")
                 return render_template("listVideos.html", isAdmin=True)
-        
+
             return render_template("listVideos.html", isAdmin=False)
     except:
         print("Session Expired")
@@ -92,6 +92,7 @@ def home_page():
 def authFunction():
     return redirect(url_for("fenix-example.login"))
 
+#USer Logout
 @app.route('/logout')
 def logout():
     # this clears all server information about the access token of this connection
@@ -99,7 +100,7 @@ def logout():
     return redirect(url_for("home_page"))
 
 
-#Sends the user to the video Page  
+#Sends the user to the video Page
 @app.route('/video_page/<int:id>')
 def getVideoPage(id):
     if fenix_blueprint.session.authorized == False:
@@ -135,6 +136,7 @@ def addNewVideo():
         redirect(url_for("fenix-example.login"))
 
 
+#Listing of all video events to user
 @app.route("/api/video/get", methods=['GET'])
 def getListOfVideos():
     if fenix_blueprint.session.authorized == True:
@@ -145,6 +147,7 @@ def getListOfVideos():
         redirect(url_for("fenix-example.login"))
 
 
+#Obtaining a specific video
 @app.route("/api/video/<int:id>/get", methods=["GET"])
 def getSingleVideo(id):
     if fenix_blueprint.session.authorized == True:
@@ -154,7 +157,7 @@ def getSingleVideo(id):
     else:
         redirect(url_for("fenix-example.login"))
 
-
+#Obtaining the questions corresponding to a specific video
 @app.route("/api/video/<int:id>/question/get", methods=["GET"])
 def getListOfQuestions(id):
     if fenix_blueprint.session.authorized == True:
@@ -168,7 +171,7 @@ def getListOfQuestions(id):
     else:
         redirect(url_for("fenix-example.login"))
 
-
+#Adding a new question
 @app.route("/api/question/add", methods=["POST"])
 def addNewQuestion():
     if fenix_blueprint.session.authorized == True:
@@ -191,12 +194,12 @@ def addNewQuestion():
         except:
             print("Error in put")
 
-        
+
         return jsonify()
     else:
         redirect(url_for("fenix-example.login"))
 
-
+#Obtaining a specific question
 @app.route("/api/question/<int:id>/get", methods=["GET"])
 def getSingleQuestion(id):
     if fenix_blueprint.session.authorized == True:
@@ -206,7 +209,7 @@ def getSingleQuestion(id):
     else:
         redirect(url_for("fenix-example.login"))
 
-
+#Obtaining a specific user
 @app.route("/api/user/get/", methods=["GET"])
 def getUser():
     if fenix_blueprint.session.authorized == True:
@@ -218,6 +221,7 @@ def getUser():
     else:
         redirect(url_for("fenix-example.login"))
 
+#Adding an answer to a specific question
 @app.route("/api/answer/add", methods=["POST"])
 def addNewAnswer():
     if fenix_blueprint.session.authorized == True:
@@ -238,10 +242,11 @@ def addNewAnswer():
         except:
             print("Error in put")
 
-        
+
     return jsonify()
 
 
+#Obtaining all answers to a specific question
 @app.route("/api/answer/<int:q_id>/get", methods=["GET"])
 def getListOfAnswers(q_id):
     if fenix_blueprint.session.authorized == True:
@@ -256,6 +261,7 @@ def getListOfAnswers(q_id):
         return jsonify()
 
 
+#Adding a new video
 @app.route("/api/video/view/<int:id>/add", methods=["PUT"])
 def addVideoView(id):
     if fenix_blueprint.session.authorized == True:
@@ -278,7 +284,10 @@ def addVideoView(id):
     else:
         return jsonify()
 
+
 ##Admin Pages##
+
+#Obtaining the statistics page
 @app.route('/admin/user_stats')
 def getUserStatsPage():
     if fenix_blueprint.session.authorized == False:
@@ -289,7 +298,7 @@ def getUserStatsPage():
         else:
             return redirect(url_for("home_page"))
 
-
+#Obtaining the logs page
 @app.route('/admin/logs')
 def getLogsPage():
     if fenix_blueprint.session.authorized == False:
@@ -301,6 +310,7 @@ def getLogsPage():
             return redirect(url_for("home_page"))
 
 ##Admin API##
+#Obtaining the list of users
 @app.route('/admin/api/users/get', methods=["GET"])
 def getListOfUsers():
     if fenix_blueprint.session.authorized == True and getCurrentUser()["username"] in adminUsers["user_id"]:
@@ -314,7 +324,7 @@ def getListOfUsers():
     else:
         return jsonify()
 
-
+#Obtaining the list of message events
 @app.route('/admin/api/logs/message_events/get', methods=["GET"])
 def getListOfMessageEvents():
     if fenix_blueprint.session.authorized == True and getCurrentUser()["username"] in adminUsers["user_id"]:
@@ -328,7 +338,7 @@ def getListOfMessageEvents():
     else:
         return jsonify()
 
-
+#Obtaining the list of data events
 @app.route('/admin/api/logs/data_events/get', methods=["GET"])
 def getListOfDataEvents():
     if fenix_blueprint.session.authorized == True and getCurrentUser()["username"] in adminUsers["user_id"]:

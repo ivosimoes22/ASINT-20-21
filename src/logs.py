@@ -22,10 +22,11 @@ engine = create_engine('sqlite:///%s'%(DATABASE_FILE), echo=False) #echo = True 
 
 Base = declarative_base()
 
+#Declaration of the Message Table
 class MessageEvent(Base):
     __tablename__ = 'MessageEvent'
     id = Column(Integer, primary_key=True)
-    timestamp = Column(String)
+    timestamp = Column(String,nullable=False)
     request = Column(String)
 
     def __repr__(self):
@@ -34,13 +35,14 @@ class MessageEvent(Base):
     def to_dict(self):
         return {'msg_id': self.id, 'timestamp': self.timestamp, 'request': self.request}
 
+#Declaration of the Data Table
 class DataEvent(Base):
     __tablename__ = 'DataEvent'
     id = Column(Integer, primary_key=True)
-    timestamp = Column(String)
+    timestamp = Column(String,nullable=False)
     d_type = Column(String)
     d_content = Column(String)
-    user = Column(String)
+    user = Column(String,ForeignKey('User.id'))
 
     def __repr__(self):
         return "<DataEvent (Id=%d, TimeStamp=%s, Type=%s, Content=%s, User=%s>)" % (self.id, self.timestamp, self.d_type, self.d_content, self.user)
@@ -54,10 +56,13 @@ db_Session = sessionmaker(bind=engine)
 db_session = scoped_session(db_Session)
 
 
-#Functions related to the MessageEvent class
+#Functions related with the Message DataBase
+
+#Listing of all message events
 def listMessagesEvents():
     return db_session.query(MessageEvent).order_by(MessageEvent.timestamp).all()
 
+#Listing of message events to dictionary
 def listMessagesEventsDict():
     logs = []
     logList = listMessagesEvents()
@@ -66,6 +71,7 @@ def listMessagesEventsDict():
         logs.append(l)
     return logs
 
+#Adding the new message event to the Message Table
 def addMessageEventDB(timestamp, msg):
     newMsg = MessageEvent(timestamp=timestamp, request=msg)
 
@@ -78,10 +84,13 @@ def addMessageEventDB(timestamp, msg):
         return None
 
 
-#Functions related to the DataEvent class
+#Functions related with the Data DataBase
+
+#Listing of all data events
 def listDataEvents():
     return db_session.query(DataEvent).order_by(DataEvent.timestamp).all()
 
+#Listing of data events to dictionary
 def listDataEventsDict():
     logs = []
     logList = listDataEvents()
@@ -90,6 +99,7 @@ def listDataEventsDict():
         logs.append(l)
     return logs
 
+#Adding the new data event to the Data Table
 def addDataEventDB(timestamp, d_type, d_content, user):
     newData = DataEvent(timestamp=timestamp, d_type=d_type, d_content=d_content, user=user)
 
@@ -101,23 +111,25 @@ def addDataEventDB(timestamp, d_type, d_content, user):
         db_session.rollback()
         return None
 
+
 #Endpoint functions
-#Message Events
+
+#Posting new message (Message Creation Events)
 @app.route('/store/message_events', methods=["POST"])
 def addNewMessageEvent():
     try:
         #print(request.form["request"])
         if addMessageEventDB(str(request.form["timestamp"]), str(request.form["request"])) is not None:
-            print("New msg added with success")
+            print("New message added with success.")
         else:
-            print("Couldnt add msg")
+            print("Couldn't add the message.")
     except:
-        print("Error addding to MessageEventDB")
-    
+        print("Error addding to MessageEventDB.")
+
     #print(listMessagesEventsDict())
     return jsonify()
 
-
+#Listing of all message events (all entries of the message table)
 @app.route('/message_events/get', methods=["GET"])
 def getMessageEvents():
     msgs = {}
@@ -128,21 +140,22 @@ def getMessageEvents():
     return jsonify(msgs)
 
 
-#Data Creation Events
+#Posting new data (Data Creation Events)
 @app.route('/store/data_events', methods=["POST"])
 def addNewDataEvent():
     try:
         #print(request.form["request"])
         if addDataEventDB(request.form["timestamp"], request.form["d_type"], request.form["d_content"], request.form["user"]) is not None:
-            print("New data event added with success")
+            print("New data added with success.")
         else:
-            print("Couldnt add data event")
+            print("Couldn't add the data.")
     except:
-        print("Error addding to DataEventDB")
-    
+        print("Error addding to DataEventDB.")
+
     print(listDataEventsDict())
     return jsonify()
 
+#Listing of all data events (all entries of the data table)
 @app.route('/data_events/get', methods=["GET"])
 def getDataCreationEvents():
     data = {}
