@@ -42,7 +42,7 @@ class DataEvent(Base):
     timestamp = Column(String,nullable=False)
     d_type = Column(String)
     d_content = Column(String)
-    user = Column(String,ForeignKey('User.id'))
+    user = Column(String,nullable=False)
 
     def __repr__(self):
         return "<DataEvent (Id=%d, TimeStamp=%s, Type=%s, Content=%s, User=%s>)" % (self.id, self.timestamp, self.d_type, self.d_content, self.user)

@@ -33,8 +33,8 @@ class Question(Base):
     __tablename__= 'Question'
     id = Column(Integer, primary_key=True)
     q_text = Column(String,nullable=False)
-    video_id = Column(Integer,ForeignKey('Video.id'))
-    user_id = Column(String,ForeignKey('User.id'))
+    video_id = Column(Integer,nullable=False)
+    user_id = Column(String,nullable=False)
     timestamp = Column(Float,nullable=False)
 
     def __repr__(self):
@@ -48,9 +48,9 @@ class Answer(Base):
     __tablename__ = 'Answer'
     id = Column(Integer, primary_key=True)
     a_text = Column(String,nullable=False)
-    video_id = Column(Integer,ForeignKey('Video.id'))
-    user_id = Column(String,ForeignKey('User.id'))
-    q_id = Column(Integer,ForeignKey('Question.id'))
+    video_id = Column(Integer,nullable=False)
+    user_id = Column(String,nullable=False)
+    q_id = Column(Integer,nullable=False)
 
     def __repr__(self):
         return "<Answer (Id=%d, Text=%s, VideoId=%d, UserId=%s, QuestionId=%s)" %  (self.id, self.a_text, self.video_id, self.user_id, self.q_id)

@@ -33,7 +33,7 @@ class Video(Base):
     url = Column(String, unique=True)
     title = Column(String,nullable=False)
     views = Column(Integer, default = 0)
-    userId = Column(String,ForeignKey('User.id'))
+    userId = Column(String,nullable=False)
 
     def __repr__(self):
         return "<Video (Id=%d, URL=%s, Title=%s, Views=%d, User=%s>)" % (self.id, self.url, self.title, self.views, self.userId)
