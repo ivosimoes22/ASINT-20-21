@@ -125,7 +125,8 @@ def addNewVideo():
 
 
         else:
-            print("Couldn't add the video.")
+            #print("Couldn't add the video.")
+            abort(400)
     except:
         print("Error addding to VideoDB")
 
