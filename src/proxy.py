@@ -7,13 +7,9 @@ from flask import jsonify, url_for
 from flask import session
 from datetime import datetime
 import requests
-
-#from user_manager import *
-
-#necessary so that our server does not need https
 import os
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 #All the other python files
 components = {
@@ -22,7 +18,6 @@ components = {
     'video_db': "http://127.0.0.1:4800/",
     'qa': "http://127.0.0.1:4900/"
 }
-
 
 app = Flask(__name__)
 app.secret_key = "secretkey"
@@ -38,15 +33,16 @@ fenix_blueprint = OAuth2ConsumerBlueprint(
 )
 app.register_blueprint(fenix_blueprint)
 
-adminUsers = {"user_id": ["ist187024"]}
+#List of admin IDS
+adminUsers = {"user_id": ["ist187024", "ist187125"]}
 
-
+#Helper function to get the current userID
 def getCurrentUser():
     resp = fenix_blueprint.session.get("/api/fenix/v1/person/")
     user_data = resp.json()
     return user_data
 
-
+#Saves every message exchanged as a log
 @app.before_request
 def beforeRequest():
     log = {}

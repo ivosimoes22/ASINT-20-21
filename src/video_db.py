@@ -123,19 +123,17 @@ def addNewVideo():
             except:
                 print("Error in POST.")
 
-
         else:
-            #print("Couldn't add the video.")
-            abort(400)
+            print("Couldn't add the video.")
     except:
         print("Error addding to VideoDB")
 
-    #print(listVideosDict())
     return jsonify()
 
 #Listing of all video events (all entries of the Video Table)
 @app.route('/video/get', methods=['GET'])
 def getListVideos():
+    videos = {}
     try:
         videos = listVideosDict()
     except:

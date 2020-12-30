@@ -126,7 +126,6 @@ def addNewMessageEvent():
     except:
         print("Error addding to MessageEventDB.")
 
-    #print(listMessagesEventsDict())
     return jsonify()
 
 #Listing of all message events (all entries of the message table)

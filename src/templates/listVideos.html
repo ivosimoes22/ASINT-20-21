@@ -9,6 +9,45 @@
 
     <script>
 
+      function checkUrl(url) {
+        let videoID = url
+        .replace("http://", "")
+        .replace("https://", "")
+        .replace("www.", "")
+        .replace("youtu.be/", "youtube.com/watch?v=")
+        .split("/")
+        .splice(1)
+        .join("");
+
+        
+        videoID = videoID.substring(8, 19);
+        return videoID
+      }
+
+      function validVideoId(id, videoUrl, videoTitle) {
+          var img = new Image();
+          img.src = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
+          img.onload = function () {
+            
+            if (checkThumbnail(this.width)) {
+              addNewVideo(videoUrl, videoTitle)
+            }
+          }
+        }
+        
+        function checkThumbnail(width) {
+          //A video thumbnail has width of 320.
+          //if the video does not exist(therefore thumbnail don't exist), a default thumbnail of 120 width is returned.
+          if (width === 120) {
+            alert("Error: Invalid video id");
+            return false
+          }
+          else {
+            return true 
+          }
+        }
+
+
         function getNumberOfQuestions(videoId) {
           $.ajax({
             url: '/api/video/'+videoId+'/question/get',
@@ -64,13 +103,16 @@
                   window.location.href = '/logout'
               }
           )
-          $("#buttonAddVideo").click(
-              function(){                  
+          $("#buttonAddVideo").click(function(){       
+
                   newVideoUrl = $("#newVideoURL").val()
                   newVideoTitle = $("#newVideoTitle").val()
                   if (newVideoUrl && newVideoTitle) {
-                    //checkUrl(newVideoUrl)
-                    addNewVideo(newVideoUrl, newVideoTitle)
+                      videoID = checkUrl(newVideoUrl)
+                      validVideoId(videoID, newVideoUrl, newVideoTitle)
+                  }
+                  else {
+                    alert("Video Url and Title have to be filled")
                   }
                   document.getElementById("newVideoURL").value="";
                   document.getElementById("newVideoTitle").value="";

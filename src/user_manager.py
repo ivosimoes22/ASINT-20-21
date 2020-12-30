@@ -218,6 +218,7 @@ def addNewAnswer():
 #Listing of all user events (all entries of the User Table)
 @app.route('/users/get', methods=["GET"])
 def getListUsers():
+    users = {}
     try:
         users = listUsersDict()
     except:
