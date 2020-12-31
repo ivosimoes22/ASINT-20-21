@@ -9,6 +9,7 @@
 
     <script>
 
+      //Splits the url of the video to obtain a youtube video id
       function checkUrl(url) {
         let videoID = url
         .replace("http://", "")
@@ -24,6 +25,7 @@
         return videoID
       }
 
+      //Obtains a thumbnail from youtube video to validate if it is a valid video
       function validVideoId(id, videoUrl, videoTitle) {
           var img = new Image();
           img.src = "http://img.youtube.com/vi/" + id + "/mqdefault.jpg";
@@ -35,6 +37,7 @@
           }
         }
         
+        //Trick to know if the video has a valid ID
         function checkThumbnail(width) {
           //A video thumbnail has width of 320.
           //if the video does not exist(therefore thumbnail don't exist), a default thumbnail of 120 width is returned.
@@ -47,7 +50,7 @@
           }
         }
 
-
+        //Gets the number of questions for a specific video
         function getNumberOfQuestions(videoId) {
           $.ajax({
             url: '/api/video/'+videoId+'/question/get',
@@ -60,6 +63,7 @@
           })
         }
 
+        //Adds a new video to the system
         function addNewVideo(url, title, description){
           let requestData={'url': url, 'title': title}
           $.ajax({
@@ -74,11 +78,13 @@
           });
         }
 
+        //Redirects the user to the video page
         function goToVideoPage(id){
           console.log(id)
           window.location.href='/video_page/'+id
         }
 
+        //Updates the list of videos with information in the database 
         function updateVideoTable() {
           $.ajax({
               url: '/api/video/get',
@@ -107,8 +113,11 @@
 
                   newVideoUrl = $("#newVideoURL").val()
                   newVideoTitle = $("#newVideoTitle").val()
+
+                  //Checks if the user filled the text inputs
                   if (newVideoUrl && newVideoTitle) {
                       videoID = checkUrl(newVideoUrl)
+                      //Checks if it is a valid youtube id
                       validVideoId(videoID, newVideoUrl, newVideoTitle)
                   }
                   else {
@@ -143,6 +152,7 @@
 
   <div class="rightMain">
 
+    <!-- If the user is an admin the buttons User Statistics and Logs are shown in the page of video list -->
     {% if isAdmin %}
     
       <button class="ui button" id="buttonUserStats">

@@ -149,7 +149,7 @@ def beforeRequest():
         print("Error in beforeRequest.")
     return
 
-#Listing of all question events (all entries of the Question Table)
+#Listing of all question events for a specific video (all entries of the Question Table)
 @app.route('/video/<int:id>/question/get', methods=["GET"])
 def getQuestions(id):
     questions = {}

@@ -12,6 +12,8 @@
 
     <script>
         var a_qid, a_vid;
+
+        //Obtain the id of the video from the url
         function getIDfromURL() {
             var url = window.location.href
             var urlVariables = url.split('/')
@@ -19,6 +21,7 @@
             return id
         }
 
+        //Convert the timestamp in the videos to format mm:ss
         function convertSecondsToMinutes(time, q_id) {
           var minutes = Math.floor(time / 60);
           var seconds = time - minutes * 60;
@@ -35,6 +38,7 @@
           $("#videoTime"+q_id).html(newTime)
         }
 
+        //Check if the user only input " " in the text forms
         function validateTextInput(x) {
             if (x === null || x.trim() === "") {
                 return false;
@@ -43,9 +47,9 @@
             }
         }
 
+        //Get the information of the user that created a question and populates the table of the question chosen
         function updateQuestionInfo(q_data) {
           user_id = q_data["user_id"]
-          //console.log(user_id)
           $.ajax({
             url: '/api/user/get/?id='+user_id,
             type: "GET",
@@ -73,18 +77,19 @@
           })
         }
 
+        //Get the information of the question chosen
         function checkQuestion(q_id) {
           $.ajax({
             url: '/api/question/'+q_id+'/get',
             type: "GET",
             dataType: "json",
             success: function (data) {
-              //console.log(data["q_id"])
               q_data = updateQuestionInfo(data)
             },
           })
         }
 
+        //Get the information from the video with a specific id
         function getVideo(vPlayer) {
           //Receive the video ID
           var video_id = getIDfromURL()
@@ -101,6 +106,7 @@
           })
         }
 
+        //Adds a new question to the system 
         function addNewQuestion(questionBody, timestamp) {
           video_id = getIDfromURL()
           let requestData = {'text': questionBody, 'video_id': video_id, 'timestamp': timestamp}
@@ -116,6 +122,7 @@
           });
         }
 
+        //Get the timestamp and question of all questions for a video
         function updateQuestionTable() {
           video_id = getIDfromURL()
           $.ajax({
@@ -132,6 +139,7 @@
           });
         }
 
+        //Adds a new answer to the system 
         function addNewAnswer(q_id, answerBody, video_id) {
           let requestData = {'a_text': answerBody, 'video_id': video_id, 'q_id': q_id}
           $.ajax({
@@ -146,6 +154,7 @@
           });
         }
 
+        //Get the information of all the answers for a specific question chosen
         function checkAnswer(q_id) {
           $.ajax({
             url: '/api/answer/'+ q_id + '/get',
@@ -162,6 +171,7 @@
           });
         }
 
+        //Get the information of the user that created an answer
         function updateAnswerUserName(a_id, user_id) {
           $.ajax({
             url: '/api/user/get/?id='+user_id,
@@ -173,6 +183,7 @@
           });
         }
 
+        //Increase the views
         function increaseViews() {
           video_id = getIDfromURL()
           $.ajax({
@@ -247,7 +258,6 @@
             $("#buttonNewQuestion").show();
             questionBody = $("#questionBody").val()
             
-            //console.log("T")
             if (validateTextInput(questionBody)) {
               addNewQuestion(questionBody, pauseTime)
             }

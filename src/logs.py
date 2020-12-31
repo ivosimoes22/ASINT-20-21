@@ -164,6 +164,6 @@ def getDataCreationEvents():
         print("Error listing data events")
     return jsonify(data)
 
-
+#Runnig locally
 if __name__ == '__main__':
-    app.run(debug=True, port=4600)
+    app.run(host='127.0.0.1', port=4600, debug=True)

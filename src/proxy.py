@@ -174,7 +174,6 @@ def addNewQuestion():
         question = {}
         try:
             question = request.get_json()
-            print(question)
             #Get the ID of the user creating the video
             question["userId"] = getCurrentUser()["username"]
             url = components["qa"] + 'question/add'
@@ -182,7 +181,7 @@ def addNewQuestion():
         except:
             print("Error receiving question info")
 
-        #add a question to the user DB
+        #increase the question number to the current user in the user DB
         url = components["user_manager"]+'user/question/add/?id='+getCurrentUser()["username"]
 
         try:
@@ -210,7 +209,6 @@ def getSingleQuestion(id):
 def getUser():
     if fenix_blueprint.session.authorized == True:
         user_id = request.args.get('id')
-        print(user_id)
         url = components["user_manager"]+'user/get/?id='+user_id
         user = requests.get(url=url)
         return jsonify(user.json())
@@ -237,9 +235,8 @@ def addNewAnswer():
             user_resp = requests.put(url=url)
         except:
             print("Error in put")
-
-
-    return jsonify()
+    else:
+        return jsonify()
 
 
 #Obtaining all answers to a specific question

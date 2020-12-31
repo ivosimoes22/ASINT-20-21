@@ -227,4 +227,4 @@ def getListUsers():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=4700)
+    app.run(host='127.0.0.1', port=4700, debug=True)
