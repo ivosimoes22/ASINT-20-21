@@ -235,8 +235,8 @@ def addNewAnswer():
             user_resp = requests.put(url=url)
         except:
             print("Error in put")
-    else:
-        return jsonify()
+    
+    return jsonify()
 
 
 #Obtaining all answers to a specific question
