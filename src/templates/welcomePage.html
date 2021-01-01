@@ -21,10 +21,34 @@
 
     </script>
 
+    <style>
+
+      .center {
+        text-align: center;
+      }
+
+      h1 {
+        font-weight: bold;
+        font-size: 80px;
+}
+
+      img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 20%;
+      }
+
+    </style>
+
 </head>
 <body>
-  <h1>Video Q&A Application</h1>
+  <h1 class ="center">Video Q&A Application</h1>
 
-  <button class="ui button" id="buttonUserLogin">
-    Log in
-  </button>
+  <div class="img"><img src={{url_for('static', filename='page_logo.png')}} /></div>
+  
+  <div class="center">
+    <button class="ui button" id="buttonUserLogin">
+      Log in
+    </button>
+  </div>
