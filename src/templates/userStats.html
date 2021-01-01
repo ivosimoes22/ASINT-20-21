@@ -51,12 +51,32 @@
         $(document).ready(function(){
             $("#usersTableStats").hide();
             updateUsersTable()
+
+            $("#buttonGoBack").click(
+              function(){
+                  window.location.href = '/'
+              }
+          );
         });
 
     </script>
 
+    <style>
+      .rightMain{
+        float:right;
+        margin-right: 1%;
+      }
+    </style>
+
 </head>
+
 <body>
+    <div class="rightMain">
+      <button class="ui button" id="buttonGoBack">
+        List of Videos
+      </button>
+    </div>
+
     <h1>User Statistics</h1>
 
     <div class="ui grid">

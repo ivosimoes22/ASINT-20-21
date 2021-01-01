@@ -290,6 +290,11 @@
               document.getElementById("answerBody").value="";
               
             })
+            $("#buttonGoBack").click(
+              function(){
+                  window.location.href = '/'
+              }
+          );
 
         });
         
@@ -313,12 +318,21 @@
         padding: 10px;
       }
 
-      /* #questionsTable {
-        width: 40%;
-      } */
+      .rightMain{
+        float:right;
+        margin-top: 1%;
+        margin-right: 1%;
+      }
     </style>
 
   </head>
+
+  <div class="rightMain">
+    <button class="ui button" id="buttonGoBack">
+      List of Videos
+    </button>
+  </div>
+
   <body>
       <div class="centerElements">
         <h1 id="videoTitle"></h1>
